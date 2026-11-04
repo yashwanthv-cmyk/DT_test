@@ -1,0 +1,2154 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dollar Tree Causal Lift Engine</title>
+  <meta name="description" content="Executive Causal Attribution & Store Clustering Engine (Phase 1 MVP) for Dollar Tree store sales analytics." />
+  <meta property="og:title" content="Dollar Tree Causal Lift Engine" />
+  <meta property="og:description" content="Executive Causal Attribution & Store Clustering Engine (Phase 1 MVP) for Dollar Tree store sales analytics." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Fonts: Plus Jakarta Sans for UI + JetBrains Mono for Tabular Numerals -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dt: {
+              emerald: '#00733B',
+              forest: '#004d27',
+              lightmint: '#E8F5E9',
+              mintborder: '#C8E6C9',
+              darkslate: '#0F172A',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* Executive styling touches */
+    body {
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+      -webkit-font-smoothing: antialiased;
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    /* Custom scrollbar for data tables and side panels */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col font-sans text-slate-900 bg-slate-50 selection:bg-emerald-100 selection:text-emerald-900">
+
+  <!-- TOP EXECUTIVE BANNER / HEADER -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 px-6 py-3 shrink-0">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-6">
+      
+      <!-- Zone 1: Wordmark & Brand -->
+      <div class="flex items-center gap-3 shrink-0">
+        <div class="w-9 h-9 rounded bg-dt-emerald flex items-center justify-center text-white shadow-sm font-black text-lg tracking-wider">
+          DT
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-base tracking-tight text-slate-900">DOLLAR TREE</span>
+            <span class="text-xs font-semibold text-dt-emerald bg-dt-lightmint border border-dt-mintborder px-2 py-0.5 rounded">Phase 1 MVP</span>
+          </div>
+          <p class="text-xs text-slate-500 font-medium">Store Sales Attribution & Causal Lift Engine</p>
+        </div>
+      </div>
+
+      <!-- Zone 2: Navigation Links / View Breadcrumbs -->
+      <div class="hidden md:flex items-center gap-6 text-xs font-medium text-slate-600">
+        <span class="text-slate-900 font-semibold">Store Sales Attribution</span>
+        <span class="text-slate-300">/</span>
+        <span>Causal Lift Engine</span>
+        <span class="text-slate-300">·</span>
+        <span class="text-slate-500 font-mono">8,994 Comp Stores</span>
+      </div>
+
+      <!-- Zone 3: Primary Action / Quick Controls -->
+      <div class="flex items-center gap-3 shrink-0">
+        <button id="exportBriefBtn" onclick="window.print()" class="px-3.5 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded border border-slate-200 transition-colors flex items-center gap-2">
+          <i class="fa-solid fa-print"></i>
+          <span>Print / PDF Brief</span>
+        </button>
+        <button onclick="switchTab('tab-attribution')" class="px-3.5 py-1.5 text-xs font-medium text-white bg-dt-emerald hover:bg-dt-forest rounded shadow-sm transition-colors flex items-center gap-2">
+          <i class="fa-solid fa-calculator"></i>
+          <span>Attribution Simulator</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE LAYOUT (Sidebar + Viewport) -->
+  <div class="flex-1 flex overflow-hidden">
+    
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 select-none">
+      
+      <!-- Workspace Navigation Title -->
+      <div class="p-4 border-b border-slate-800">
+        <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Analytics Workspace</div>
+        <div class="text-sm font-semibold text-white flex items-center justify-between">
+          <span>Causal Lift Engine</span>
+          <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800">ACTIVE</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+        
+        <button onclick="switchTab('tab-overview')" id="nav-tab-overview" class="w-full text-left px-3 py-2.5 rounded text-xs font-medium flex items-center gap-3 transition-colors text-white bg-emerald-900/60 border border-emerald-700/50">
+          <i class="fa-solid fa-chart-pie w-4 text-center text-emerald-400"></i>
+          <div class="flex-1 truncate">
+            <div class="font-semibold">Executive Overview</div>
+            <div class="text-[10px] text-slate-400 truncate">Milestone Scorecard & Concurrency</div>
+          </div>
+        </button>
+
+        <button onclick="switchTab('tab-macro')" id="nav-tab-macro" class="w-full text-left px-3 py-2.5 rounded text-xs font-medium flex items-center gap-3 transition-colors text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+          <i class="fa-solid fa-gas-pump w-4 text-center text-slate-400"></i>
+          <div class="flex-1 truncate">
+            <div class="font-semibold">Macro & Calendars</div>
+            <div class="text-[10px] text-slate-500 truncate">EIA Gas Lag-3 & Payday Pulses</div>
+          </div>
+        </button>
+
+        <button onclick="switchTab('tab-weather')" id="nav-tab-weather" class="w-full text-left px-3 py-2.5 rounded text-xs font-medium flex items-center gap-3 transition-colors text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+          <i class="fa-solid fa-cloud-sun w-4 text-center text-slate-400"></i>
+          <div class="flex-1 truncate">
+            <div class="font-semibold">Piecewise Weather Kinks</div>
+            <div class="text-[10px] text-slate-500 truncate">Thermal Threshold Simulator</div>
+          </div>
+        </button>
+
+        <button onclick="switchTab('tab-clustering')" id="nav-tab-clustering" class="w-full text-left px-3 py-2.5 rounded text-xs font-medium flex items-center gap-3 transition-colors text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+          <i class="fa-solid fa-network-wired w-4 text-center text-slate-400"></i>
+          <div class="flex-1 truncate">
+            <div class="font-semibold">Store Clustering</div>
+            <div class="text-[10px] text-slate-500 truncate">LCA 6 Archetypes & Matching</div>
+          </div>
+        </button>
+
+        <button onclick="switchTab('tab-attribution')" id="nav-tab-attribution" class="w-full text-left px-3 py-2.5 rounded text-xs font-medium flex items-center gap-3 transition-colors text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+          <i class="fa-solid fa-scale-balanced w-4 text-center text-slate-400"></i>
+          <div class="flex-1 truncate">
+            <div class="font-semibold">Causal Attribution MVP</div>
+            <div class="text-[10px] text-slate-500 truncate">LMDI Decomposition & Backtest</div>
+          </div>
+        </button>
+
+      </nav>
+
+      <!-- Sidebar Footer: Methodology Footnote -->
+      <div class="p-4 border-t border-slate-800 bg-slate-950/40 text-[11px] text-slate-500">
+        <div class="font-medium text-slate-400 mb-1 flex items-center gap-1.5">
+          <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+          <span>Econometric Guardrails</span>
+        </div>
+        <p class="leading-relaxed">
+          Synthetic Controls with Simplex constraint (<span class="font-mono text-slate-400">Σw=1, w≥0</span>) & 4-Gate donor qualification.
+        </p>
+      </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT VIEWPORT -->
+    <main class="flex-1 overflow-y-auto bg-slate-50 p-6 lg:p-8">
+      <div class="max-w-7xl mx-auto space-y-8">
+
+        <!-- ======================================================== -->
+        <!-- VIEW 1: EXECUTIVE OVERVIEW & MILESTONE SCORECARD         -->
+        <!-- ======================================================== -->
+        <section id="view-tab-overview" class="space-y-6">
+          
+          <!-- Header title block -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-dt-emerald">Executive Briefing · Phase 1 Deliverables</div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Fleet Overview & Concurrency Scorecard</h1>
+              <p class="text-sm text-slate-600 mt-1 max-w-3xl">
+                Comprehensive tracking across 8,994 comparable Dollar Tree stores (open ≥15 consecutive months out of 9,344 total fleet). Disentangling overlapping corporate interventions across Multi-Price Point (MPP), Dedicated Cashier (DC), and Paint & Powder (P&P).
+              </p>
+            </div>
+            <div class="flex items-center gap-3 self-start md:self-auto shrink-0 bg-white p-2.5 rounded-lg border border-slate-200 shadow-sm text-xs">
+              <span class="text-slate-500 font-medium">Status:</span>
+              <span class="inline-flex items-center gap-1.5 text-emerald-700 font-semibold">
+                <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                Production Ready
+              </span>
+            </div>
+          </div>
+
+          <!-- TOP 4 METRIC CARDS -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <!-- Comp Stores -->
+            <div class="bg-white rounded-lg border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+              <div class="flex items-center justify-between text-slate-500 mb-2">
+                <span class="text-xs font-semibold uppercase tracking-wider">Comparable Fleet</span>
+                <i class="fa-solid fa-store text-emerald-600 text-sm"></i>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-bold text-slate-900 tabular-nums">8,994</span>
+                <span class="text-xs text-slate-500 font-medium">/ 9,344 Total</span>
+              </div>
+              <div class="mt-2 text-xs text-slate-600 flex items-center justify-between pt-2 border-t border-slate-100">
+                <span>Rule: ≥15 Consecutive Mo.</span>
+                <span class="font-semibold text-emerald-700">96.3% Fleet</span>
+              </div>
+            </div>
+
+            <!-- MPP Penetration -->
+            <div class="bg-white rounded-lg border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+              <div class="flex items-center justify-between text-slate-500 mb-2">
+                <span class="text-xs font-semibold uppercase tracking-wider">Multi-Price Point (MPP)</span>
+                <i class="fa-solid fa-tags text-emerald-600 text-sm"></i>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-bold text-slate-900 tabular-nums">6,150</span>
+                <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">66% Pen.</span>
+              </div>
+              <div class="mt-2 text-xs text-slate-600 flex items-center justify-between pt-2 border-t border-slate-100">
+                <span>Tier $3.00, $4.00, $5.00</span>
+                <span class="font-medium text-slate-500">Soft vs Hard tracking</span>
+              </div>
+            </div>
+
+            <!-- Dedicated Cashier Penetration -->
+            <div class="bg-white rounded-lg border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+              <div class="flex items-center justify-between text-slate-500 mb-2">
+                <span class="text-xs font-semibold uppercase tracking-wider">Dedicated Cashier (DC)</span>
+                <i class="fa-solid fa-cash-register text-emerald-600 text-sm"></i>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-bold text-slate-900 tabular-nums">4,446</span>
+                <span class="text-xs font-semibold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded">48% Pen.</span>
+              </div>
+              <div class="mt-2 text-xs text-slate-600 flex items-center justify-between pt-2 border-t border-slate-100">
+                <span>Concentrated Surge</span>
+                <span class="font-medium text-slate-700 font-mono text-[11px]">Feb 2026 Ramp</span>
+              </div>
+            </div>
+
+            <!-- Paint & Powder Penetration -->
+            <div class="bg-white rounded-lg border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+              <div class="flex items-center justify-between text-slate-500 mb-2">
+                <span class="text-xs font-semibold uppercase tracking-wider">Paint & Powder (P&P)</span>
+                <i class="fa-solid fa-paint-roller text-emerald-600 text-sm"></i>
+              </div>
+              <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-bold text-slate-900 tabular-nums">2,849</span>
+                <span class="text-xs font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">30% Pen.</span>
+              </div>
+              <div class="mt-2 text-xs text-slate-600 flex items-center justify-between pt-2 border-t border-slate-100">
+                <span>Overnight Interior Refresh</span>
+                <span class="font-medium text-slate-500">Zero store closure</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- OCTOBER MILESTONE STATUS GRID (4 PILLARS) -->
+          <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h2 class="text-base font-bold text-slate-900">Milestone Execution Grid</h2>
+                <p class="text-xs text-slate-500">Execution and delivery tracking across core architectural workstreams</p>
+              </div>
+              <span class="text-xs font-mono bg-slate-100 text-slate-700 px-2 py-1 rounded border border-slate-200">
+                4 of 4 Pillars Completed
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              
+              <!-- Pillar 1 -->
+              <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-colors">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-slate-800">01. Scope Detailed</span>
+                  <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                    <i class="fa-solid fa-check mr-1"></i>Completed
+                  </span>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                  Formalized 3 key retail initiatives (MPP, DC, P&P). Defined operational timelines, rollout cohorts, and soft vs. hard launch disambiguation.
+                </p>
+                <div class="text-[11px] text-slate-500 font-mono pt-2 border-t border-slate-200 flex justify-between">
+                  <span>Audited Cohorts:</span>
+                  <strong class="text-slate-800">8,994 Stores</strong>
+                </div>
+              </div>
+
+              <!-- Pillar 2 -->
+              <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-colors">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-slate-800">02. Data Harmonized</span>
+                  <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                    <i class="fa-solid fa-check mr-1"></i>Completed
+                  </span>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                  5 enterprise data streams unified: Weekly Store POS scans, Store Metadata (square footage, shrink tier, anchor), FRED Macro, Meteostat Weather, & Payroll/SNAP Calendars.
+                </p>
+                <div class="text-[11px] text-slate-500 font-mono pt-2 border-t border-slate-200 flex justify-between">
+                  <span>Data Pipelines:</span>
+                  <strong class="text-slate-800">5 Streams Validated</strong>
+                </div>
+              </div>
+
+              <!-- Pillar 3 -->
+              <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-colors">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-slate-800">03. Signals Validated</span>
+                  <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                    <i class="fa-solid fa-check mr-1"></i>Completed
+                  </span>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                  Econometric signal identification complete: State-specific piecewise thermal kinks, EIA Gas Price Lag-3 credit-card statement impulse, and 1st/3rd EBT liquidity surge.
+                </p>
+                <div class="text-[11px] text-slate-500 font-mono pt-2 border-t border-slate-200 flex justify-between">
+                  <span>Exogenous Controls:</span>
+                  <strong class="text-slate-800">3 Verified Latencies</strong>
+                </div>
+              </div>
+
+              <!-- Pillar 4 -->
+              <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-colors">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-slate-800">04. Clustering Finalized</span>
+                  <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                    <i class="fa-solid fa-check mr-1"></i>Completed
+                  </span>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                  Disqualified Euclidean K-Means and Hierarchical Chaining. Selected Latent Class Analysis (LCA) yielding 6 discrete store archetypes with optimal Bayesian fit.
+                </p>
+                <div class="text-[11px] text-slate-500 font-mono pt-2 border-t border-slate-200 flex justify-between">
+                  <span>Segmentation:</span>
+                  <strong class="text-slate-800">6 LCA Archetypes</strong>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- FLEET CONCURRENCY BREAKDOWN & OVERLAP ANALYSIS -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Concurrency Chart (8 cols) -->
+            <div class="lg:col-span-8 bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                <div>
+                  <h2 class="text-base font-bold text-slate-900">Fleet Concurrency & Multi-Initiative Overlap</h2>
+                  <p class="text-xs text-slate-500">Visualizing single-initiative isolation vs. co-intervention contamination</p>
+                </div>
+                <div class="text-xs text-slate-500 flex items-center gap-3">
+                  <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-emerald-600 inline-block"></span> MPP</span>
+                  <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-indigo-600 inline-block"></span> DC</span>
+                  <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-amber-600 inline-block"></span> P&P</span>
+                </div>
+              </div>
+
+              <div class="h-64 relative">
+                <canvas id="concurrencyChart"></canvas>
+              </div>
+
+              <!-- Concurrency Metrics Summary Table -->
+              <div class="mt-4 pt-4 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                <div class="p-2 rounded bg-slate-50 border border-slate-100">
+                  <div class="text-[11px] text-slate-500">MPP Only</div>
+                  <div class="text-base font-bold text-emerald-800 font-mono">2,306</div>
+                  <div class="text-[10px] text-slate-500">25.6% fleet</div>
+                </div>
+                <div class="p-2 rounded bg-slate-50 border border-slate-100">
+                  <div class="text-[11px] text-slate-500">DC Only</div>
+                  <div class="text-base font-bold text-indigo-800 font-mono">602</div>
+                  <div class="text-[10px] text-slate-500">6.7% fleet</div>
+                </div>
+                <div class="p-2 rounded bg-slate-50 border border-slate-100">
+                  <div class="text-[11px] text-slate-500">P&P Only</div>
+                  <div class="text-base font-bold text-amber-800 font-mono">242</div>
+                  <div class="text-[10px] text-slate-500">2.7% fleet</div>
+                </div>
+                <div class="p-2 rounded bg-emerald-50 border border-emerald-200">
+                  <div class="text-[11px] text-emerald-800 font-medium">Multi-Overlap</div>
+                  <div class="text-base font-bold text-emerald-900 font-mono">3,844</div>
+                  <div class="text-[10px] text-emerald-700 font-semibold">42.7% co-located!</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Econometric Callout & C-Suite Narrative (4 cols) -->
+            <div class="lg:col-span-4 bg-white rounded-lg border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-700 mb-2">
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                  <span>The Co-Intervention Imperative</span>
+                </div>
+                <h3 class="text-sm font-bold text-slate-900 mb-2">Why Simple Pre/Post Averages Fail</h3>
+                <p class="text-xs text-slate-600 leading-relaxed space-y-2">
+                  <span class="block mb-2">
+                    In standard FP&A reporting, initiatives are frequently evaluated in isolation. However, with <strong class="text-slate-800 font-semibold">3,844 stores simultaneously experiencing multiple interventions</strong>, an unadjusted comparison will double-count sales gains.
+                  </span>
+                  <span class="block mb-2">
+                    For instance, a store receiving both <strong class="text-emerald-700">Multi-Price Point ($3–$5 merchandise)</strong> and a <strong class="text-indigo-700">Dedicated Cashier</strong> in February 2026 will show heightened throughput. Attributing 100% of the basket lift to MPP or 100% of transaction speed to DC creates a distorted causal picture.
+                  </span>
+                  <span class="block text-slate-700 font-medium bg-slate-50 p-2.5 rounded border border-slate-200">
+                    <i class="fa-solid fa-quote-left text-slate-400 mr-1"></i>
+                    Multivariate Causal Synthetic Controls with Stratified Donors isolate the true marginal dollar lift per initiative with 0% unexplained residual.
+                  </span>
+                </p>
+              </div>
+
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span class="text-slate-500">Pure Controls Available:</span>
+                <span class="font-mono font-bold text-slate-800">2,000 Stores (22.2%)</span>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- ======================================================== -->
+        <!-- VIEW 2: MACROECONOMIC & EXOGENOUS NORMALIZATION          -->
+        <!-- ======================================================== -->
+        <section id="view-tab-macro" class="space-y-6 hidden">
+          
+          <!-- View Header -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-dt-emerald">Macroeconomic & Calendar Normalization</div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">EIA Gasoline Price Lead/Lag & Liquidity Pulses</h1>
+              <p class="text-sm text-slate-600 mt-1 max-w-3xl">
+                De-biasing sales data against exogenous shocks: the 21-day credit card billing delay following gas price inflation, and government benefit (SNAP/SSI) monthly liquidity surges.
+              </p>
+            </div>
+            <div class="flex items-center gap-2 self-start md:self-auto bg-white p-2 rounded-lg border border-slate-200 text-xs">
+              <span class="text-slate-500">FRED Series:</span>
+              <span class="font-semibold text-slate-800 font-mono">GASREGCOVW & DSPIC96</span>
+            </div>
+          </div>
+
+          <!-- EIA GAS PRICE LEAD/LAG CURVE -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <div class="lg:col-span-8 bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                <div>
+                  <h2 class="text-base font-bold text-slate-900">EIA Gas Price Correlation Across Lead/Lag Horizon</h2>
+                  <p class="text-xs text-slate-500">Lead 4 weeks (t-4) to Lag 4 weeks (t+4) correlation with Dollar Tree weekly sales</p>
+                </div>
+                <div class="text-xs font-mono text-emerald-800 bg-emerald-50 px-2 py-1 rounded border border-emerald-200">
+                  Peak at Lag 3: +0.10 Correlation
+                </div>
+              </div>
+
+              <div class="h-64 relative">
+                <canvas id="gasLeadLagChart"></canvas>
+              </div>
+
+              <!-- Interactive Gas Shock Simulator -->
+              <div class="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div class="text-xs font-bold text-slate-800">Simulate Gas Price Shock:</div>
+                  <div class="text-[11px] text-slate-500">See how gas price inflation shifts comp sales over time</div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button onclick="simulateGasShock(0.50)" class="px-2.5 py-1 text-xs font-medium rounded bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-colors">
+                    +50¢/gal Gas Spike
+                  </button>
+                  <button onclick="simulateGasShock(-0.30)" class="px-2.5 py-1 text-xs font-medium rounded bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors">
+                    -30¢/gal Gas Drop
+                  </button>
+                  <button onclick="simulateGasShock(0)" class="px-2.5 py-1 text-xs font-medium rounded bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">
+                    Reset Baseline
+                  </button>
+                </div>
+              </div>
+              <div id="gasSimulationResult" class="mt-2 text-xs font-mono p-2.5 rounded bg-slate-50 border border-slate-200 text-slate-700">
+                Baseline status: Zero in-week drag (<span class="font-bold">t0 = 0.00</span>). Peak trade-down occurs at <span class="font-bold text-emerald-700">Lag +3 weeks (+0.10)</span>.
+              </div>
+            </div>
+
+            <!-- Narrative Card: Credit Card Billing Cycle (4 cols) -->
+            <div class="lg:col-span-4 bg-white rounded-lg border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-dt-emerald mb-2">
+                  <i class="fa-solid fa-credit-card"></i>
+                  <span>The 21-Day Statement Mechanism</span>
+                </div>
+                <h3 class="text-sm font-bold text-slate-900 mb-2">Why Lag 3 Drives Trade-Down to Dollar Tree</h3>
+                <p class="text-xs text-slate-600 leading-relaxed space-y-2">
+                  <span class="block mb-2">
+                    <strong class="text-slate-800 font-semibold">Zero In-Week Friction (t0 = 0.00):</strong> When gas prices surge at the pump, commuters cannot instantly alter vehicle miles traveled. The tank must be filled regardless, generating zero immediate impact on Dollar Tree sales in week 0.
+                  </span>
+                  <span class="block mb-2">
+                    <strong class="text-slate-800 font-semibold">The 21-Day Billing Shock:</strong> Most low-to-middle income consumers pay for gasoline via credit or debit card. Approximately 3 weeks later (21–28 days), credit card statements arrive with bloated totals, triggering acute household budget contractions.
+                  </span>
+                  <span class="block text-slate-700 font-medium bg-slate-50 p-2.5 rounded border border-slate-200">
+                    <i class="fa-solid fa-arrow-trend-up text-emerald-600 mr-1"></i>
+                    Consumers trade down from traditional supermarkets to Dollar Tree for paper towels, cleaning supplies, and pantry staples, resulting in a positive sales bump at Lag 3.
+                  </span>
+                </p>
+              </div>
+
+              <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 flex justify-between">
+                <span>Model Horizon:</span>
+                <span class="font-mono text-slate-800 font-bold">Lag t+1 to t+4 Incorporated</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- CALENDAR LIQUIDITY PULSES (SNAP/SSI & HOLIDAYS) -->
+          <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+              <div>
+                <h2 class="text-base font-bold text-slate-900">Calendar Exogenous Normalization: Benefit Liquidity & Holiday Pulses</h2>
+                <p class="text-xs text-slate-500">Controlling for government transfer deposit dates and holiday shopping wave dynamics</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <label for="calendarShockSelect" class="text-xs text-slate-600 font-medium">Select Calendar Event:</label>
+                <select id="calendarShockSelect" onchange="updateCalendarChart()" class="text-xs bg-slate-50 border border-slate-200 rounded px-2.5 py-1 text-slate-800 font-semibold focus:outline-none focus:border-dt-emerald">
+                  <option value="snap">1st & 3rd SNAP/SSI Monthly Benefit Pulse (+18%)</option>
+                  <option value="easter">Easter Holiday (T-1 Pantry Load vs T+1 Slump)</option>
+                  <option value="halloween">Halloween Surge (Seasonal Confectionery)</option>
+                  <option value="christmas">Christmas / Q4 Holiday Peak</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+              
+              <!-- Calendar Shock Chart (8 cols) -->
+              <div class="lg:col-span-8 h-64 relative">
+                <canvas id="calendarPulseChart"></canvas>
+              </div>
+
+              <!-- Calendar Event Narrative (4 cols) -->
+              <div class="lg:col-span-4 p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-3">
+                <div class="text-xs font-bold text-slate-900 uppercase tracking-wider" id="calendarEventTitle">1st & 3rd Benefit Liquidity Surge</div>
+                <p class="text-xs text-slate-600 leading-relaxed" id="calendarEventDesc">
+                  State Electronic Benefit Transfer (EBT/SNAP) disbursements and Supplemental Security Income (SSI) deliver substantial cash infusions on the 1st and 3rd of each calendar month. Dollar Tree comp stores experience an immediate <strong class="text-slate-800 font-semibold">+15% to +20% basket volume surge</strong> over days 1–5, dissipating rapidly by day 15.
+                </p>
+                <div class="text-[11px] font-mono text-slate-600 pt-2 border-t border-slate-200 flex justify-between">
+                  <span>Causal Normalization:</span>
+                  <strong class="text-emerald-700" id="calendarEventStatus">Harmonized via Day-of-Month Dum.</strong>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- ======================================================== -->
+        <!-- VIEW 3: PIECEWISE WEATHER KINK MODELER                   -->
+        <!-- ======================================================== -->
+        <section id="view-tab-weather" class="space-y-6 hidden">
+          
+          <!-- View Header -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-dt-emerald">Piecewise Weather Normalization Engine</div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Thermal Kink Thresholds & Friction Modeler</h1>
+              <p class="text-sm text-slate-600 mt-1 max-w-3xl">
+                Dollar Tree customers exhibit piecewise non-linear sensitivity to extreme temperature. Temperatures between local cold and hot kinks cause zero trip decay; beyond these thresholds, weekly store sales bend downward with state-specific slopes.
+              </p>
+            </div>
+            <div class="flex items-center gap-2 self-start md:self-auto bg-white p-2 rounded-lg border border-slate-200 text-xs">
+              <span class="text-slate-500">Weather API Source:</span>
+              <span class="font-semibold text-slate-800 font-mono">Meteostat v2.1 Grid</span>
+            </div>
+          </div>
+
+          <!-- INTERACTIVE THERMAL KINK SIMULATOR -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Controls & Simulation Card (4 cols) -->
+            <div class="lg:col-span-4 bg-white rounded-lg border border-slate-200 p-6 shadow-sm space-y-5">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">State Thermal Parameter Config</h3>
+                <p class="text-xs text-slate-500">Select geographic cluster state to inspect localized kink parameters</p>
+              </div>
+
+              <!-- State Selector -->
+              <div>
+                <label for="weatherStateSelect" class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Target State Cluster</label>
+                <select id="weatherStateSelect" onchange="onWeatherStateChange()" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5 font-semibold text-slate-800 focus:outline-none focus:border-dt-emerald">
+                  <option value="TX">Texas (Sunbelt Southern Mild-Cold)</option>
+                  <option value="CA">California (Pacific Mild Comfort)</option>
+                  <option value="FL">Florida (Subtropical Heat & Humidity)</option>
+                  <option value="OH">Ohio (Midwest Moderate Winter)</option>
+                  <option value="MN">Minnesota (Northern Extreme Freeze Resilience)</option>
+                </select>
+              </div>
+
+              <!-- Interactive Temperature Slider -->
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <label for="tempSlider" class="text-xs font-bold text-slate-700 uppercase tracking-wider">Simulated Weekly Avg Temp</label>
+                  <span id="tempDisplay" class="font-mono text-base font-bold text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200">55.0°F</span>
+                </div>
+                <input type="range" id="tempSlider" min="10" max="110" step="0.5" value="55" oninput="onTempSliderChange()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600">
+                <div class="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+                  <span>10°F (Deep Freeze)</span>
+                  <span>65°F (Comfort)</span>
+                  <span>110°F (Heatwave)</span>
+                </div>
+              </div>
+
+              <!-- Live Calculated Output Cards -->
+              <div class="space-y-3 pt-3 border-t border-slate-100">
+                
+                <div class="p-3.5 rounded-lg bg-slate-50 border border-slate-200">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-500 font-medium">Thermal Regime:</span>
+                    <span id="regimeBadge" class="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
+                      Comfort Zone (0% Loss)
+                    </span>
+                  </div>
+                  <div class="mt-2 text-xs text-slate-600 flex items-center justify-between">
+                    <span>Expected Sales Lift / Drag:</span>
+                    <strong id="expectedSalesImpact" class="text-sm font-mono font-bold text-slate-900">0.00%</strong>
+                  </div>
+                </div>
+
+                <!-- 10% Sales Loss Temperature -->
+                <div class="p-3.5 rounded-lg bg-red-50/60 border border-red-200">
+                  <div class="text-[11px] font-semibold text-red-800 flex items-center gap-1.5 mb-1">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Operational Critical Boundary (10% Sales Loss)</span>
+                  </div>
+                  <div class="text-xs text-slate-600 leading-tight">
+                    <span class="font-mono text-[10px] text-slate-500 block mb-1">Formula: T_loss,10% = Kink ± 10 / |slope|</span>
+                    <div class="flex items-center justify-between pt-1">
+                      <span>Cold 10% Loss:</span>
+                      <strong id="coldLossTemp" class="font-mono text-red-700 text-xs font-bold">44.4°F</strong>
+                    </div>
+                    <div class="flex items-center justify-between pt-0.5">
+                      <span>Heat 10% Loss:</span>
+                      <strong id="hotLossTemp" class="font-mono text-red-700 text-xs font-bold">90.4°F</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Snowfall & Wildfire Toggles -->
+                <div class="pt-2 border-t border-slate-100 space-y-2">
+                  <div class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Severe Weather Modifiers</div>
+                  
+                  <label class="flex items-center justify-between p-2 rounded hover:bg-slate-50 cursor-pointer border border-slate-200 text-xs">
+                    <div class="flex items-center gap-2 text-slate-700">
+                      <i class="fa-solid fa-snowflake text-sky-500"></i>
+                      <span>Snowfall Accumulation (≥2 in)</span>
+                    </div>
+                    <input type="checkbox" id="snowfallToggle" onchange="onWeatherStateChange()" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+                  </label>
+
+                  <label class="flex items-center justify-between p-2 rounded hover:bg-slate-50 cursor-pointer border border-slate-200 text-xs">
+                    <div class="flex items-center gap-2 text-slate-700">
+                      <i class="fa-solid fa-smog text-amber-500"></i>
+                      <span>Wildfire Smoke Disruption (AQI &gt; 150)</span>
+                    </div>
+                    <input type="checkbox" id="wildfireToggle" onchange="onWeatherStateChange()" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+                  </label>
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Dynamic Chart.js Graph & State Parameters Table (8 cols) -->
+            <div class="lg:col-span-8 space-y-6">
+              
+              <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                  <div>
+                    <h2 class="text-base font-bold text-slate-900" id="chartStateTitle">Texas Piecewise Thermal Kink Curve</h2>
+                    <p class="text-xs text-slate-500">Flat baseline across normal comfort band; steep downward slopes outside kinks</p>
+                  </div>
+                  <div class="flex items-center gap-2 text-xs">
+                    <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-dt-emerald inline-block"></span> Model Curve</span>
+                    <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span> Active Marker</span>
+                  </div>
+                </div>
+
+                <div class="h-72 relative">
+                  <canvas id="weatherKinkChart"></canvas>
+                </div>
+              </div>
+
+              <!-- State Thermal Kink Comparison Matrix -->
+              <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm overflow-x-auto">
+                <h3 class="text-sm font-bold text-slate-900 mb-3">Empirical Piecewise Kink Calibration (5 Core Regional Archetypes)</h3>
+                <table class="w-full text-xs text-left">
+                  <thead class="bg-slate-50 text-slate-600 uppercase font-semibold text-[10px] border-b border-slate-200">
+                    <tr>
+                      <th class="py-2.5 px-3">State Cluster</th>
+                      <th class="py-2.5 px-3">Cold Kink (°F)</th>
+                      <th class="py-2.5 px-3">Cold Slope (%/°F)</th>
+                      <th class="py-2.5 px-3">Comfort Band</th>
+                      <th class="py-2.5 px-3">Hot Kink (°F)</th>
+                      <th class="py-2.5 px-3">Hot Slope (%/°F)</th>
+                      <th class="py-2.5 px-3">Behavioral Profile</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100 text-slate-700">
+                    <tr class="hover:bg-slate-50/80">
+                      <td class="py-2 px-3 font-bold text-slate-900">Texas (TX)</td>
+                      <td class="py-2 px-3 font-mono font-semibold text-blue-700">53.7°F</td>
+                      <td class="py-2 px-3 font-mono text-red-600 font-semibold">-1.08% / °F</td>
+                      <td class="py-2 px-3 font-mono text-emerald-700 bg-emerald-50/60">53.7°F – 77.9°F</td>
+                      <td class="py-2 px-3 font-mono font-semibold text-amber-700">77.9°F</td>
+                      <td class="py-2 px-3 font-mono text-red-600 font-semibold">-0.80% / °F</td>
+                      <td class="py-2 px-3 text-slate-500">Trip consolidation at mild cold</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80">
+                      <td class="py-2 px-3 font-bold text-slate-900">California (CA)</td>
+                      <td class="py-2 px-3 font-mono font-semibold text-blue-700">48.0°F</td>
+                      <td class="py-2 px-3 font-mono text-red-600 font-semibold">-0.92% / °F</td>
+                      <td class="py-2 px-3 font-mono text-emerald-700 bg-emerald-50/60">48.0°F – 79.5°F</td>
+                      <td class="py-2 px-3 font-mono font-semibold text-amber-700">79.5°F</td>
+                      <td class="py-2 px-3 font-mono text-red-600 font-semibold">-0.75% / °F</td>
+                      <td class="py-2 px-3 text-slate-500">Narrow thermal tolerance window</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80">
+                      <td class="py-2 px-3 font-bold text-slate-900">Florida (FL)</td>
+                      <td class="py-2 px-3 font-mono font-semibold text-blue-700">58.5°F</td>
+                      <td class="py-2 px-3 font-mono text-red-600 font-semibold">-1.25% / °F</td>
+                      <td class="py-2 px-3 font-mono text-emerald-700 bg-emerald-50/60">58.5°F – 83.0°F</td>
+                      <td class="py-2 px-3 font-mono font-semibold text-amber-700">83.0°F</td>
+                      <td class="py-2 px-3 font-mono text-red-600 font-semibold">-0.88% / °F</td>
+                      <td class="py-2 px-3 text-slate-500">Extreme sensitivity below 60°F</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80">
+                      <td class="py-2 px-3 font-bold text-slate-900">Ohio (OH)</td>
+                      <td class="py-2 px-3 font-mono font-semibold text-blue-700">26.4°F</td>
+                      <td class="py-2 px-3 font-mono text-red-600 font-semibold">-0.58% / °F</td>
+                      <td class="py-2 px-3 font-mono text-emerald-700 bg-emerald-50/60">26.4°F – 80.0°F</td>
+                      <td class="py-2 px-3 font-mono font-semibold text-amber-700">80.0°F</td>
+                      <td class="py-2 px-3 font-mono text-red-600 font-semibold">-0.69% / °F</td>
+                      <td class="py-2 px-3 text-slate-500">Midwestern weather adaptation</td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/80">
+                      <td class="py-2 px-3 font-bold text-slate-900">Minnesota (MN)</td>
+                      <td class="py-2 px-3 font-mono font-semibold text-blue-700">11.2°F</td>
+                      <td class="py-2 px-3 font-mono text-red-600 font-semibold">-0.32% / °F</td>
+                      <td class="py-2 px-3 font-mono text-emerald-700 bg-emerald-50/60">11.2°F – 82.5°F</td>
+                      <td class="py-2 px-3 font-mono font-semibold text-amber-700">82.5°F</td>
+                      <td class="py-2 px-3 font-mono text-red-600 font-semibold">-0.71% / °F</td>
+                      <td class="py-2 px-3 text-slate-500">Extreme cold resilience down to 11°F</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- BEHAVIORAL ECONOMICS NARRATIVE CARD -->
+          <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+            <h2 class="text-base font-bold text-slate-900 mb-2">Behavioral Economics of Southern Mild-Cold Trip Consolidation</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-slate-600 leading-relaxed">
+              <div>
+                <h4 class="font-bold text-slate-800 mb-1">Why 55°F Punishes Texas More Than 15°F in Minnesota</h4>
+                <p>
+                  In the Sunbelt (Texas, Florida, Georgia), Dollar Tree stores serve as high-frequency convenience fill-in destinations. When temperatures drop below 55°F, Southern consumers do not face impassable roads; rather, they engage in <strong class="text-slate-800">discretionary trip cancellation and consolidation</strong>, deferring impulse visits to big-box grocery trips.
+                </p>
+              </div>
+              <div>
+                <h4 class="font-bold text-slate-800 mb-1">Snowfall Sticky Ground Friction (+2.0x Multiplier)</h4>
+                <p>
+                  Cold temperature alone reduces trips via comfort preference, but when snowfall sticks (accumulating $\ge 2$ inches), the friction converts into a physical mobility blockage. Empirical econometric testing reveals a <strong class="text-slate-800 font-mono">+2.0x drag multiplier</strong> that operates instantaneously on transaction volume.
+                </p>
+              </div>
+              <div>
+                <h4 class="font-bold text-slate-800 mb-1">Wildfire Smoke AQI Threshold Disruption</h4>
+                <p>
+                  In Western Zone 4 (California, Oregon, Washington), air quality indices exceeding 150 AQI (Unhealthy) trigger a discrete -4.2% weekly sales reduction independent of temperature. Customers avoid open-air strip mall parking lots, significantly curtailing impulse foot traffic.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+
+        <!-- ======================================================== -->
+        <!-- VIEW 4: STORE CLUSTERING ENGINE                          -->
+        <!-- ======================================================== -->
+        <section id="view-tab-clustering" class="space-y-6 hidden">
+          
+          <!-- View Header -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-dt-emerald">Store Clustering Engine</div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Latent Class Analysis (LCA) Store Clustering</h1>
+              <p class="text-sm text-slate-600 mt-1 max-w-3xl">
+                Evaluating algorithm selection across 7,041 candidate stores and partitioning the comparable fleet into 6 high-integrity econometric archetypes to anchor synthetic control donor pools.
+              </p>
+            </div>
+            <div class="flex items-center gap-2 self-start md:self-auto bg-white p-2 rounded-lg border border-slate-200 text-xs">
+              <span class="text-slate-500">Target Metric:</span>
+              <span class="font-semibold text-slate-800 font-mono">BIC Minimum @ K=6</span>
+            </div>
+          </div>
+
+          <!-- THE STORY OF ALGORITHM SELECTION -->
+          <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+            <div class="mb-4">
+              <h2 class="text-base font-bold text-slate-900">The Story of Algorithm Selection: Rigorous Triage</h2>
+              <p class="text-xs text-slate-500">Why standard clustering failed and Latent Class Analysis was selected for executive sign-off</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+              
+              <!-- K-Means Disqualified -->
+              <div class="p-4 rounded-lg bg-red-50/40 border border-red-200 relative flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-slate-900">K-Means Clustering</span>
+                    <span class="text-[11px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded border border-red-200">
+                      DISQUALIFIED
+                    </span>
+                  </div>
+                  <div class="text-xs text-slate-700 font-medium mb-2">Failure Mode: Euclidean Distortion</div>
+                  <p class="text-xs text-slate-600 leading-relaxed space-y-1">
+                    Store features are inherently mixed: continuous (footfall, square footage), ordinal (shrink risk 1–4), and categorical (geographic retail zone 1–6, anchor tenant type). K-Means computes Euclidean distances, artificially warping distances on non-metric retail spaces and collapsing clusters into false spheres.
+                  </p>
+                </div>
+                <div class="mt-3 pt-2 border-t border-red-200 text-[11px] text-red-800 font-medium">
+                  <i class="fa-solid fa-xmark mr-1"></i>High Silhouette distortion, poor balance
+                </div>
+              </div>
+
+              <!-- Hierarchical Disqualified -->
+              <div class="p-4 rounded-lg bg-amber-50/40 border border-amber-200 relative flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-slate-900">Hierarchical Agglomerative</span>
+                    <span class="text-[11px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded border border-amber-200">
+                      DISQUALIFIED
+                    </span>
+                  </div>
+                  <div class="text-xs text-slate-700 font-medium mb-2">Failure Mode: 7,041-Store Chaining Disaster</div>
+                  <p class="text-xs text-slate-600 leading-relaxed space-y-1">
+                    Hierarchical linkage suffered catastrophic single-link chaining across the 7,041 candidate stores. Outlier rural stores with extreme square footage continuously merged into giant heterogeneous clusters, destroying distinct archetype boundaries required for test/control matching.
+                  </p>
+                </div>
+                <div class="mt-3 pt-2 border-t border-amber-200 text-[11px] text-amber-800 font-medium">
+                  <i class="fa-solid fa-xmark mr-1"></i>Chaining collapse, uninterpretable dendrogram
+                </div>
+              </div>
+
+              <!-- Latent Class Analysis Winner -->
+              <div class="p-4 rounded-lg bg-emerald-50/70 border-2 border-emerald-500 relative flex flex-col justify-between shadow-sm">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-slate-900">Latent Class Analysis (LCA)</span>
+                    <span class="text-[11px] font-bold text-emerald-800 bg-emerald-200 px-2 py-0.5 rounded border border-emerald-300">
+                      <i class="fa-solid fa-trophy mr-1"></i>WINNER
+                    </span>
+                  </div>
+                  <div class="text-xs text-emerald-900 font-bold mb-2">Optimal Bayesian Probabilities on Mixed Features</div>
+                  <p class="text-xs text-slate-700 leading-relaxed space-y-1">
+                    LCA models the probability distribution of observed variables conditional on an unobserved latent class. Perfectly handles categorical geographic zones and discrete shrink ratings without artificial scaling. Bayesian Information Criterion (BIC) achieved minimum at exactly K=6 archetypes.
+                  </p>
+                </div>
+                <div class="mt-3 pt-2 border-t border-emerald-300 text-[11px] text-emerald-900 font-semibold flex items-center justify-between">
+                  <span><i class="fa-solid fa-check mr-1"></i>Optimal BIC & Entropy 0.88</span>
+                  <span class="font-mono text-xs">K = 6 Classes</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- INTERACTIVE 6 LCA ARCHETYPE EXPLORER & COMPARISON -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left: Clickable Archetype Grid (5 cols) -->
+            <div class="lg:col-span-5 space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold text-slate-900">LCA Fleet Archetypes (Click to Inspect)</h3>
+                <span class="text-xs text-slate-500">8,994 Stores</span>
+              </div>
+
+              <div id="archetypeList" class="space-y-2">
+                <!-- Dynamically or statically populated archetype cards -->
+              </div>
+            </div>
+
+            <!-- Right: Detailed Archetype Inspector & Radar (7 cols) -->
+            <div class="lg:col-span-7 bg-white rounded-lg border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+              
+              <div id="archetypeDetailHeader" class="border-b border-slate-200 pb-4">
+                <!-- Selected Archetype Title and Metrics -->
+              </div>
+
+              <!-- Radar/Bar Chart comparison -->
+              <div class="py-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">Multi-Dimensional Footprint (Normalized Index 0–100)</span>
+                  <div class="text-[11px] text-slate-500">Selected Segment vs Fleet Baseline</div>
+                </div>
+                <div class="h-64 relative flex items-center justify-center">
+                  <canvas id="archetypeRadarChart"></canvas>
+                </div>
+              </div>
+
+              <!-- Demographic & Behavioral Inspector Details -->
+              <div id="archetypeDetailFooter" class="pt-4 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                <!-- Populated via JS -->
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- TEST & CONTROL MATCHING GUARDRAIL INSPECTOR -->
+          <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+              <div>
+                <h2 class="text-base font-bold text-slate-900">Econometric Test & Control Matching Guardrails</h2>
+                <p class="text-xs text-slate-500">How synthetic control donor pools are rigorously formed under 4 strict business gates</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <label for="guardrailSegmentSelect" class="text-xs text-slate-600 font-medium">Filter by Archetype:</label>
+                <select id="guardrailSegmentSelect" onchange="updateGuardrailMetrics()" class="text-xs bg-slate-50 border border-slate-200 rounded px-2.5 py-1 text-slate-800 font-semibold focus:outline-none focus:border-dt-emerald">
+                  <option value="all">All Fleet (8,994 stores)</option>
+                  <option value="1">Segment 1: Suburban Budget Strip</option>
+                  <option value="2">Segment 2: Rural Replenishment Hubs</option>
+                  <option value="3">Segment 3: Northern Affluent Fill-In</option>
+                  <option value="4">Segment 4: Premier West Coast Anchor</option>
+                  <option value="5">Segment 5: Dense Metro Grab-and-Go</option>
+                  <option value="6">Segment 6: Urban Sunbelt Flagships</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- The 4 Business Gates -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              
+              <div class="p-3.5 rounded border border-slate-200 bg-slate-50">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Gate 1: Cluster Isolation</div>
+                <div class="text-xs font-bold text-slate-900 mb-1">Strict Archetype Boundary</div>
+                <p class="text-[11px] text-slate-600">
+                  Donor controls must belong to the exact same LCA cluster. Zero cross-archetype donors allowed to prevent demographic bias.
+                </p>
+                <div class="mt-2 text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 inline-block">
+                  Enforced: Within-Cluster Only
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded border border-slate-200 bg-slate-50">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Gate 2: Quiet Window</div>
+                <div class="text-xs font-bold text-slate-900 mb-1">±6-Month Intervention Silence</div>
+                <p class="text-[11px] text-slate-600">
+                  Candidate donor stores cannot have experienced an MPP, DC, or P&P rollout within 26 weeks pre- or post-treatment.
+                </p>
+                <div class="mt-2 text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 inline-block">
+                  Buffer: 26 Weeks Uncontaminated
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded border border-slate-200 bg-slate-50">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Gate 3: Data Completeness</div>
+                <div class="text-xs font-bold text-slate-900 mb-1">&lt;20% Missing POS Scans</div>
+                <p class="text-[11px] text-slate-600">
+                  Store must possess continuous weekly sales transactions with fewer than 20% interpolated scans over the 15-month comp period.
+                </p>
+                <div class="mt-2 text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 inline-block">
+                  Coverage: &gt;80% Clean POS
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded border border-slate-200 bg-slate-50">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Gate 4: Balance Check</div>
+                <div class="text-xs font-bold text-slate-900 mb-1">SMD &lt; 0.10 Covariates</div>
+                <p class="text-[11px] text-slate-600">
+                  Standardized Mean Difference must remain below 0.10 across pre-treatment basket size, transaction velocity, and square footage.
+                </p>
+                <div class="mt-2 text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 inline-block">
+                  Target: SMD &lt; 0.10 (Standardized)
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Donor Pool Simulator Display -->
+            <div class="bg-slate-900 text-white rounded-lg p-5">
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded bg-emerald-600 flex items-center justify-center font-bold text-sm">
+                    <i class="fa-solid fa-calculator"></i>
+                  </div>
+                  <div>
+                    <div class="text-xs text-slate-400 font-medium">Synthetic Control Simplex Weighting Matrix</div>
+                    <div class="text-sm font-bold text-white">Donor Store Pool Qualification & Weights (<span class="font-mono text-emerald-400">Σ w_i = 1.000, w_i ≥ 0</span>)</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-4 text-xs font-mono">
+                  <span class="text-slate-400">Treated Cohort: <strong class="text-white" id="guardrailTreatedCount">6,150 MPP</strong></span>
+                  <span class="text-slate-400">Qualified Donors: <strong class="text-emerald-400" id="guardrailDonorCount">2,000 Pure</strong></span>
+                </div>
+              </div>
+
+              <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <div class="bg-slate-800/80 p-3 rounded border border-slate-700">
+                  <span class="text-slate-400 block mb-1">Simplex Optimization Solver:</span>
+                  <div class="font-semibold text-white">Constrained Lasso / Quadratic Programming</div>
+                  <div class="text-[11px] text-slate-400 mt-1">Eliminates negative weights, prevents unrealistic extrapolation outside the convex hull of donor characteristics.</div>
+                </div>
+                <div class="bg-slate-800/80 p-3 rounded border border-slate-700">
+                  <span class="text-slate-400 block mb-1">Pre-Treatment Balance Quality:</span>
+                  <div class="font-semibold text-emerald-400 font-mono">SMD = 0.042 (High Precision)</div>
+                  <div class="text-[11px] text-slate-400 mt-1">All pre-treatment sales trends align within 1.8% MAPE prior to intervention launch dates.</div>
+                </div>
+                <div class="bg-slate-800/80 p-3 rounded border border-slate-700">
+                  <span class="text-slate-400 block mb-1">Donor Concentration (Effective N):</span>
+                  <div class="font-semibold text-white font-mono">Effective N = 18.4 Stores / Target</div>
+                  <div class="text-[11px] text-slate-400 mt-1">Sparse synthetic control solution avoids over-reliance on a single idiosyncratic donor store.</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- ======================================================== -->
+        <!-- VIEW 5: CAUSAL ATTRIBUTION & SCENARIO SIMULATION        -->
+        <!-- ======================================================== -->
+        <section id="view-tab-attribution" class="space-y-6 hidden">
+          
+          <!-- View Header -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-dt-emerald">MVP Econometric Blueprint</div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Causal Attribution & LMDI Exact Decomposition</h1>
+              <p class="text-sm text-slate-600 mt-1 max-w-3xl">
+                Disambiguating soft vs. hard launch dates, validating backtest health (pre-period MAPE & placebo tests), and running interactive Logarithmic Mean Divisia Index (LMDI) decomposition with 0% unexplained residual error.
+              </p>
+            </div>
+            <div class="flex items-center gap-2 self-start md:self-auto bg-white p-2 rounded-lg border border-slate-200 text-xs">
+              <span class="text-slate-500">Decomposition Residual:</span>
+              <span class="font-bold text-emerald-700 font-mono">0.00% Unexplained</span>
+            </div>
+          </div>
+
+          <!-- MPP SOFT LAUNCH VS HARD LAUNCH TIMING DISAMBIGUATION -->
+          <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <div>
+                <h2 class="text-base font-bold text-slate-900">MPP Soft Launch vs. Hard Launch Timing Disambiguation</h2>
+                <p class="text-xs text-slate-500">Accounting for customer price-discovery lags and operational store readiness</p>
+              </div>
+
+              <!-- Segmented Toggle -->
+              <div class="flex items-center p-1 bg-slate-100 rounded-lg border border-slate-200 text-xs font-semibold">
+                <button id="toggleSoftLaunch" onclick="setLaunchMode('soft')" class="px-3 py-1.5 rounded-md bg-white text-slate-900 shadow-sm transition-colors">
+                  Soft Launch (First POS Scan)
+                </button>
+                <button id="toggleHardLaunch" onclick="setLaunchMode('hard')" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition-colors">
+                  Hard Launch (Operational Sign-Off)
+                </button>
+              </div>
+            </div>
+
+            <!-- Visual Launch Dynamics Timeline -->
+            <div class="p-5 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                
+                <!-- Stage 1 -->
+                <div class="flex-1 text-center md:text-left">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Stage 1: Soft Launch</div>
+                  <div class="text-xs font-bold text-slate-900 mt-0.5" id="stage1Title">First Scan of $3–$5 SKU</div>
+                  <div class="text-[11px] text-slate-600 mt-1" id="stage1Desc">Merchandise arrives on floor; initial cashier scans occur without full store signage.</div>
+                </div>
+
+                <i class="fa-solid fa-arrow-right text-slate-300 hidden md:block"></i>
+
+                <!-- Stage 2: 2-4 Week Discovery Gap -->
+                <div class="flex-1 p-3 rounded bg-amber-50 border border-amber-200 text-center">
+                  <div class="text-[10px] font-bold uppercase tracking-wider text-amber-800">2–4 Week Consumer Discovery Lag</div>
+                  <div class="text-xs font-bold text-amber-900 mt-0.5">Temporary UPT Dip (-3.2%)</div>
+                  <div class="text-[10px] text-amber-800 mt-1">Consumers adjust basket size to accommodate higher unit prices before basket recovery.</div>
+                </div>
+
+                <i class="fa-solid fa-arrow-right text-slate-300 hidden md:block"></i>
+
+                <!-- Stage 3 -->
+                <div class="flex-1 text-center md:text-right">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Stage 3: Hard Launch</div>
+                  <div class="text-xs font-bold text-slate-900 mt-0.5" id="stage3Title">District Manager Sign-Off</div>
+                  <div class="text-[11px] text-slate-600 mt-1" id="stage3Desc">100% shelf strip compliance, endcap signage installed, marketing collateral active.</div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!-- LMDI EXACT REVENUE DECOMPOSITION DISPLAY & SIMULATOR -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- LMDI Sliders & Mathematical Breakdown (5 cols) -->
+            <div class="lg:col-span-5 bg-white rounded-lg border border-slate-200 p-6 shadow-sm space-y-4">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">LMDI Interactive Lift Simulator</h3>
+                <p class="text-xs text-slate-500">Adjust initiative drivers to compute exact dollar contribution</p>
+              </div>
+
+              <div class="p-3 rounded bg-slate-50 border border-slate-200 text-xs font-mono">
+                <div class="text-[11px] text-slate-500 uppercase font-sans font-bold">LMDI Identity (Zero Residual):</div>
+                <div class="text-slate-800 font-semibold mt-1">ΔSales = $ΔTxn + $ΔUPT + $ΔAUR</div>
+                <div class="text-[10px] text-slate-500 mt-1">Logarithmic Mean weights ensure exact closure without interaction error.</div>
+              </div>
+
+              <!-- Transaction Lift Slider -->
+              <div>
+                <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                  <span>Δ Transaction Volume (%)</span>
+                  <span id="sliderTxnVal" class="font-mono text-emerald-700 font-bold">+2.5%</span>
+                </div>
+                <input type="range" id="sliderTxn" min="-5" max="15" step="0.1" value="2.5" oninput="calculateLMDI()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600">
+                <div class="flex justify-between text-[10px] font-mono text-slate-400 mt-0.5">
+                  <span>-5.0%</span>
+                  <span>0.0%</span>
+                  <span>+15.0%</span>
+                </div>
+              </div>
+
+              <!-- AUR Lift Slider -->
+              <div>
+                <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                  <span>Δ Average Unit Retail / AUR (%)</span>
+                  <span id="sliderAURVal" class="font-mono text-emerald-700 font-bold">+6.8%</span>
+                </div>
+                <input type="range" id="sliderAUR" min="0" max="25" step="0.1" value="6.8" oninput="calculateLMDI()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600">
+                <div class="flex justify-between text-[10px] font-mono text-slate-400 mt-0.5">
+                  <span>0.0%</span>
+                  <span>+10.0%</span>
+                  <span>+25.0%</span>
+                </div>
+              </div>
+
+              <!-- UPT Lift Slider -->
+              <div>
+                <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                  <span>Δ Units Per Transaction / UPT (%)</span>
+                  <span id="sliderUPTVal" class="font-mono text-amber-700 font-bold">-1.2%</span>
+                </div>
+                <input type="range" id="sliderUPT" min="-10" max="10" step="0.1" value="-1.2" oninput="calculateLMDI()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-amber-600">
+                <div class="flex justify-between text-[10px] font-mono text-slate-400 mt-0.5">
+                  <span>-10.0%</span>
+                  <span>0.0%</span>
+                  <span>+10.0%</span>
+                </div>
+              </div>
+
+              <div class="pt-2">
+                <button onclick="resetLMDI()" class="w-full py-1.5 text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 rounded border border-slate-200 transition-colors font-medium">
+                  Reset to Observed Empirical Baseline
+                </button>
+              </div>
+
+            </div>
+
+            <!-- LMDI Results & Waterfall Chart (7 cols) -->
+            <div class="lg:col-span-7 bg-white rounded-lg border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+              
+              <div>
+                <div class="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 class="text-sm font-bold text-slate-900">Exact Weekly Revenue Attribution Split (Per Store)</h3>
+                    <p class="text-xs text-slate-500">Benchmark weekly store sales: $38,500 baseline</p>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-xs text-slate-500 font-medium">Total Net Lift:</div>
+                    <div id="totalSalesLiftVal" class="text-base font-bold text-emerald-800 font-mono">+$3,124 / wk (+8.11%)</div>
+                  </div>
+                </div>
+
+                <div class="h-56 relative">
+                  <canvas id="lmdiWaterfallChart"></canvas>
+                </div>
+              </div>
+
+              <!-- Exact Dollar Split Cards -->
+              <div class="grid grid-cols-3 gap-3 pt-4 border-t border-slate-100 text-center">
+                <div class="p-2.5 rounded bg-slate-50 border border-slate-200">
+                  <div class="text-[10px] text-slate-500 font-semibold uppercase">Txn Volume ($Txn)</div>
+                  <div id="lmdiTxnDollar" class="text-sm font-bold text-slate-900 font-mono mt-0.5">+$962</div>
+                  <div id="lmdiTxnShare" class="text-[10px] text-emerald-700 font-medium">30.8% of Lift</div>
+                </div>
+
+                <div class="p-2.5 rounded bg-slate-50 border border-slate-200">
+                  <div class="text-[10px] text-slate-500 font-semibold uppercase">Price Mix ($AUR)</div>
+                  <div id="lmdiAURDollar" class="text-sm font-bold text-slate-900 font-mono mt-0.5">+$2,624</div>
+                  <div id="lmdiAURShare" class="text-[10px] text-emerald-700 font-medium">84.0% of Lift</div>
+                </div>
+
+                <div class="p-2.5 rounded bg-slate-50 border border-slate-200">
+                  <div class="text-[10px] text-slate-500 font-semibold uppercase">Basket Units ($UPT)</div>
+                  <div id="lmdiUPTDollar" class="text-sm font-bold text-amber-800 font-mono mt-0.5">-$462</div>
+                  <div id="lmdiUPTShare" class="text-[10px] text-amber-700 font-medium">-14.8% of Lift</div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- BACKTEST & VALIDATION HEALTH MONITOR -->
+          <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h2 class="text-base font-bold text-slate-900">Econometric Backtest & Statistical Health Monitor</h2>
+                <p class="text-xs text-slate-500">Verification checks required for executive FP&A validation</p>
+              </div>
+              <span class="text-xs font-mono font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+                <i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i>All Validation Tests Passed
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+              
+              <!-- Check 1: Pre-period MAPE -->
+              <div class="p-4 rounded-lg bg-slate-50 border border-slate-200">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-slate-800">Pre-Period MAPE Fit</span>
+                  <span class="text-[11px] font-mono font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">
+                    2.14% (Target &lt; 3.0%)
+                  </span>
+                </div>
+                <div class="text-xs text-slate-600 leading-relaxed mb-2">
+                  Mean Absolute Percentage Error between treated stores and synthetic controls across the 26-week pre-intervention window.
+                </div>
+                <div class="text-[10px] font-mono text-slate-500 pt-2 border-t border-slate-200">
+                  Benchmark: &lt;3.00% FP&A Acceptance Threshold
+                </div>
+              </div>
+
+              <!-- Check 2: Placebo In-Time -->
+              <div class="p-4 rounded-lg bg-slate-50 border border-slate-200">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-slate-800">Placebo In-Time Test</span>
+                  <span class="text-[11px] font-mono font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">
+                    p = 0.428 (Pass)
+                  </span>
+                </div>
+                <div class="text-xs text-slate-600 leading-relaxed mb-2">
+                  Assigning fictitious intervention date 26 weeks prior to actual launch. Estimated effect is statistically indistinguishable from zero (<span class="font-mono">t = 0.79</span>).
+                </div>
+                <div class="text-[10px] font-mono text-slate-500 pt-2 border-t border-slate-200">
+                  Proof: No spurious pre-intervention trend
+                </div>
+              </div>
+
+              <!-- Check 3: Placebo In-Space -->
+              <div class="p-4 rounded-lg bg-slate-50 border border-slate-200">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-slate-800">Placebo In-Space Test</span>
+                  <span class="text-[11px] font-mono font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">
+                    Alpha = 0.048 (Pass)
+                  </span>
+                </div>
+                <div class="text-xs text-slate-600 leading-relaxed mb-2">
+                  Re-assigning intervention status across pure control donor pool. Only 4.8% of donor permutations exceed true test lift ($p < 0.05$).
+                </div>
+                <div class="text-[10px] font-mono text-slate-500 pt-2 border-t border-slate-200">
+                  Proof: High-power causal attribution
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- SCRIPT LOGIC (Vanilla JS ES6+) -->
+  <script>
+    // --- STATE MANAGEMENT ---
+    let activeTab = 'tab-overview';
+    let charts = {};
+
+    // 6 LCA Archetypes Data Definition
+    const archetypesData = [
+      {
+        id: 1,
+        name: "Suburban Budget Strip",
+        stores: 1842,
+        pct: "20.5%",
+        zones: "Zones 2 & 5",
+        income: "Mod-Low ($48k)",
+        anchor: "Target / Walmart Anchored",
+        basket: 13.40,
+        traffic: 72,
+        shrink: 2.1,
+        mppResp: 85,
+        desc: "Classic mid-tier suburban retail strip centers adjacent to national value anchors. High family household density with strong responsiveness to seasonal holiday and multi-price $3–$5 merchandise expansions."
+      },
+      {
+        id: 2,
+        name: "Rural Replenishment Hubs",
+        stores: 1620,
+        pct: "18.0%",
+        zones: "Zones 3 & 6",
+        income: "Low-Mod ($38k)",
+        anchor: "Standalone / Regional Grocery",
+        basket: 16.82,
+        traffic: 45,
+        shrink: 1.4,
+        mppResp: 68,
+        desc: "Low-frequency, high-ticket destination stores serving isolated rural communities. Operates effectively as the primary local pantry replenishment center, generating the fleet-highest average basket size ($16.82)."
+      },
+      {
+        id: 3,
+        name: "Northern Affluent Fill-In",
+        stores: 1295,
+        pct: "14.4%",
+        zones: "Zones 1 & 6",
+        income: "High ($104k)",
+        anchor: "Kroger / Publix / Safeway",
+        basket: 12.10,
+        traffic: 88,
+        shrink: 1.2,
+        mppResp: 92,
+        desc: "Located in high-income suburban enclaves adjacent to premier grocers. Customers use Dollar Tree for quick paper goods, party supplies, and seasonal crafting. Highest customer density and rapid MPP uptake."
+      },
+      {
+        id: 4,
+        name: "Premier West Coast Anchor",
+        stores: 1150,
+        pct: "12.8%",
+        zones: "Zone 4 (CA Dominant)",
+        income: "Mod-High ($82k)",
+        anchor: "Power Centers / Strip Malls",
+        basket: 17.15,
+        traffic: 94,
+        shrink: 2.6,
+        mppResp: 96,
+        desc: "High operating cost California & Pacific Northwest stores with leading footfall velocity and maximum basket tickets ($17.15). Top early adopter of $4.00 and $5.00 frozen/refrigerated merchandise lines."
+      },
+      {
+        id: 5,
+        name: "Dense Metro Grab-and-Go",
+        stores: 1482,
+        pct: "16.5%",
+        zones: "Zones 1 & 3",
+        income: "Low ($32k)",
+        anchor: "Transit Hubs / Urban Streetfront",
+        basket: 11.40,
+        traffic: 96,
+        shrink: 3.8,
+        mppResp: 58,
+        desc: "High pedestrian footfall with frequent small-ticket transactions and elevated shrink risk (Tier 3–4). Fast transaction turnaround times where Dedicated Cashier (DC) rollouts yield immediate bottleneck relief."
+      },
+      {
+        id: 6,
+        name: "Urban Sunbelt Flagships",
+        stores: 1605,
+        pct: "17.8%",
+        zones: "Zones 2, 4, 5",
+        income: "Mod ($54k)",
+        anchor: "High-Volume Community Plazas",
+        basket: 14.90,
+        traffic: 91,
+        shrink: 2.3,
+        mppResp: 88,
+        desc: "Top turnstile volume stores across fast-growing Sunbelt metro regions (Dallas, Atlanta, Phoenix, Orlando). High impulse purchases across party, snack, and household cleaning categories."
+      }
+    ];
+
+    let selectedArchetypeId = 1;
+
+    // State Weather Kink Parameters
+    const weatherParams = {
+      TX: { name: "Texas", coldKink: 53.7, coldSlope: -1.08, hotKink: 77.9, hotSlope: -0.80, minT: 15, maxT: 105 },
+      CA: { name: "California", coldKink: 48.0, coldSlope: -0.92, hotKink: 79.5, hotSlope: -0.75, minT: 25, maxT: 105 },
+      FL: { name: "Florida", coldKink: 58.5, coldSlope: -1.25, hotKink: 83.0, hotSlope: -0.88, minT: 35, maxT: 102 },
+      OH: { name: "Ohio", coldKink: 26.4, coldSlope: -0.58, hotKink: 80.0, hotSlope: -0.69, minT: 10, maxT: 98 },
+      MN: { name: "Minnesota", coldKink: 11.2, coldSlope: -0.32, hotKink: 82.5, hotSlope: -0.71, minT: -10, maxT: 95 }
+    };
+
+    // --- INITIALIZATION ---
+    document.addEventListener("DOMContentLoaded", () => {
+      initArchetypeList();
+      renderArchetypeDetail(1);
+      initConcurrencyChart();
+      initArchetypeRadarChart();
+      initWeatherKinkChart();
+      initGasLeadLagChart();
+      initCalendarPulseChart();
+      initLMDIWaterfallChart();
+      calculateLMDI();
+      onWeatherStateChange();
+    });
+
+    // --- TAB SWITCHING ---
+    function switchTab(tabId) {
+      activeTab = tabId;
+
+      // Update sidebar nav highlights
+      const navIds = ['tab-overview', 'tab-macro', 'tab-weather', 'tab-clustering', 'tab-attribution'];
+      navIds.forEach(id => {
+        const btn = document.getElementById(`nav-${id}`);
+        const view = document.getElementById(`view-${id}`);
+        if (id === tabId) {
+          btn.className = "w-full text-left px-3 py-2.5 rounded text-xs font-medium flex items-center gap-3 transition-colors text-white bg-emerald-900/60 border border-emerald-700/50";
+          const icon = btn.querySelector('i');
+          if (icon) icon.className = icon.className.replace('text-slate-400', 'text-emerald-400');
+          if (view) view.classList.remove('hidden');
+        } else {
+          btn.className = "w-full text-left px-3 py-2.5 rounded text-xs font-medium flex items-center gap-3 transition-colors text-slate-400 hover:text-slate-200 hover:bg-slate-800";
+          const icon = btn.querySelector('i');
+          if (icon) icon.className = icon.className.replace('text-emerald-400', 'text-slate-400');
+          if (view) view.classList.add('hidden');
+        }
+      });
+
+      // Trigger chart resize on visible tab switch
+      setTimeout(() => {
+        Object.values(charts).forEach(chart => {
+          if (chart && typeof chart.resize === 'function') {
+            chart.resize();
+          }
+        });
+      }, 50);
+    }
+
+    // --- VIEW 1: CONCURRENCY CHART ---
+    function initConcurrencyChart() {
+      const ctx = document.getElementById('concurrencyChart').getContext('2d');
+      charts.concurrency = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Pure MPP Only', 'Pure DC Only', 'Pure P&P Only', 'MPP + DC Co-located', 'MPP + P&P Co-located', 'DC + P&P Co-located', 'All 3 Co-located (Triple)'],
+          datasets: [{
+            label: 'Store Count',
+            data: [2306, 602, 242, 1940, 1024, 380, 500],
+            backgroundColor: [
+              '#059669', // Emerald
+              '#4f46e5', // Indigo
+              '#d97706', // Amber
+              '#0d9488', // Teal
+              '#0284c7', // Sky
+              '#6366f1', // Violet
+              '#047857'  // Deep Forest Emerald
+            ],
+            borderRadius: 4,
+            barThickness: 28,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const val = context.raw;
+                  const pct = ((val / 8994) * 100).toFixed(1);
+                  return `Stores: ${val.toLocaleString()} (${pct}% of comp fleet)`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#64748B' }
+            },
+            y: {
+              grid: { color: '#F1F5F9' },
+              ticks: { font: { family: 'JetBrains Mono', size: 10 }, color: '#64748B' },
+              title: { display: true, text: 'Store Count', font: { size: 11, weight: 'bold' }, color: '#94A3B8' }
+            }
+          }
+        }
+      });
+    }
+
+    // --- VIEW 2: ARCHETYPE LIST & RADAR ---
+    function initArchetypeList() {
+      const container = document.getElementById('archetypeList');
+      container.innerHTML = '';
+      archetypesData.forEach(arch => {
+        const isSelected = arch.id === selectedArchetypeId;
+        const card = document.createElement('div');
+        card.id = `arch-card-${arch.id}`;
+        card.onclick = () => selectArchetype(arch.id);
+        card.className = `p-3 rounded-lg border cursor-pointer transition-all ${
+          isSelected 
+            ? 'bg-emerald-50/80 border-dt-emerald shadow-sm' 
+            : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+        }`;
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold ${isSelected ? 'text-dt-emerald' : 'text-slate-800'}">Segment ${arch.id}: ${arch.name}</span>
+            <span class="text-[11px] font-mono font-bold text-slate-700">${arch.stores.toLocaleString()}</span>
+          </div>
+          <div class="mt-1 flex items-center justify-between text-[11px] text-slate-500">
+            <span>${arch.zones} · HHI ${arch.income}</span>
+            <span class="font-semibold text-emerald-700">${arch.pct}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function selectArchetype(id) {
+      selectedArchetypeId = id;
+      initArchetypeList();
+      renderArchetypeDetail(id);
+      updateArchetypeRadarChart(id);
+    }
+
+    function renderArchetypeDetail(id) {
+      const arch = archetypesData.find(a => a.id === id);
+      if (!arch) return;
+
+      const header = document.getElementById('archetypeDetailHeader');
+      header.innerHTML = `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-dt-emerald">LCA Segment ${arch.id} Profile</div>
+            <h3 class="text-lg font-bold text-slate-900">${arch.name}</h3>
+            <p class="text-xs text-slate-600 mt-1">${arch.desc}</p>
+          </div>
+          <div class="text-right shrink-0 bg-slate-50 p-2.5 rounded border border-slate-200">
+            <div class="text-[10px] text-slate-500 font-semibold uppercase">Fleet Share</div>
+            <div class="text-base font-bold text-slate-900 font-mono">${arch.stores.toLocaleString()} <span class="text-xs text-emerald-700 font-bold">(${arch.pct})</span></div>
+          </div>
+        </div>
+      `;
+
+      const footer = document.getElementById('archetypeDetailFooter');
+      footer.innerHTML = `
+        <div class="p-2 rounded bg-slate-50 border border-slate-100">
+          <div class="text-[10px] text-slate-500 uppercase">Avg Basket Size</div>
+          <div class="text-sm font-bold text-slate-900 font-mono">$${arch.basket.toFixed(2)}</div>
+        </div>
+        <div class="p-2 rounded bg-slate-50 border border-slate-100">
+          <div class="text-[10px] text-slate-500 uppercase">Traffic Index</div>
+          <div class="text-sm font-bold text-slate-900 font-mono">${arch.traffic} / 100</div>
+        </div>
+        <div class="p-2 rounded bg-slate-50 border border-slate-100">
+          <div class="text-[10px] text-slate-500 uppercase">Shrink Risk Tier</div>
+          <div class="text-sm font-bold text-slate-900 font-mono">Tier ${arch.shrink}</div>
+        </div>
+        <div class="p-2 rounded bg-slate-50 border border-slate-100">
+          <div class="text-[10px] text-slate-500 uppercase">MPP Sensitivity</div>
+          <div class="text-sm font-bold text-emerald-700 font-mono">${arch.mppResp} / 100</div>
+        </div>
+      `;
+    }
+
+    function initArchetypeRadarChart() {
+      const ctx = document.getElementById('archetypeRadarChart').getContext('2d');
+      const arch = archetypesData.find(a => a.id === selectedArchetypeId) || archetypesData[0];
+
+      charts.radar = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['Footfall Traffic', 'Basket Size ($)', 'Median HHI Tier', 'Shrink Risk', 'MPP Responsiveness'],
+          datasets: [
+            {
+              label: arch.name,
+              data: [arch.traffic, (arch.basket / 18) * 100, arch.income.includes('High') ? 90 : (arch.income.includes('Mod-High') ? 75 : (arch.income.includes('Mod') ? 50 : 30)), (arch.shrink / 4) * 100, arch.mppResp],
+              backgroundColor: 'rgba(0, 115, 59, 0.2)',
+              borderColor: '#00733B',
+              pointBackgroundColor: '#00733B',
+              borderWidth: 2,
+            },
+            {
+              label: 'Fleet Average Baseline',
+              data: [75, 70, 50, 55, 75],
+              backgroundColor: 'rgba(148, 163, 184, 0.15)',
+              borderColor: '#94A3B8',
+              borderDash: [4, 4],
+              pointBackgroundColor: '#94A3B8',
+              borderWidth: 1.5,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { font: { family: 'Plus Jakarta Sans', size: 10 } }
+            }
+          },
+          scales: {
+            r: {
+              angleLines: { color: '#E2E8F0' },
+              grid: { color: '#E2E8F0' },
+              suggestedMin: 0,
+              suggestedMax: 100,
+              ticks: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    function updateArchetypeRadarChart(id) {
+      if (!charts.radar) return;
+      const arch = archetypesData.find(a => a.id === id);
+      if (!arch) return;
+
+      const normHHI = arch.income.includes('High') ? 90 : (arch.income.includes('Mod-High') ? 75 : (arch.income.includes('Mod') ? 50 : 30));
+      charts.radar.data.datasets[0].label = arch.name;
+      charts.radar.data.datasets[0].data = [
+        arch.traffic,
+        (arch.basket / 18) * 100,
+        normHHI,
+        (arch.shrink / 4) * 100,
+        arch.mppResp
+      ];
+      charts.radar.update();
+    }
+
+    function updateGuardrailMetrics() {
+      const select = document.getElementById('guardrailSegmentSelect');
+      const val = select.value;
+      const treatedEl = document.getElementById('guardrailTreatedCount');
+      const donorEl = document.getElementById('guardrailDonorCount');
+
+      if (val === 'all') {
+        treatedEl.innerText = "6,150 MPP";
+        donorEl.innerText = "2,000 Pure";
+      } else {
+        const arch = archetypesData.find(a => a.id === parseInt(val));
+        if (arch) {
+          const treated = Math.round(arch.stores * 0.68);
+          const donor = arch.stores - treated;
+          treatedEl.innerText = `${treated.toLocaleString()} in Seg ${arch.id}`;
+          donorEl.innerText = `${donor.toLocaleString()} Donors`;
+        }
+      }
+    }
+
+    // --- VIEW 3: WEATHER KINK MODELER ---
+    let currentTemp = 55;
+
+    function initWeatherKinkChart() {
+      const ctx = document.getElementById('weatherKinkChart').getContext('2d');
+      charts.weather = new Chart(ctx, {
+        type: 'line',
+        data: {
+          datasets: [
+            {
+              label: 'Piecewise Impact (% Weekly Sales)',
+              data: [],
+              borderColor: '#00733B',
+              backgroundColor: 'rgba(0, 115, 59, 0.08)',
+              borderWidth: 2.5,
+              fill: true,
+              tension: 0.1,
+              pointRadius: 0,
+            },
+            {
+              label: 'Active Temperature Point',
+              data: [],
+              backgroundColor: '#EF4444',
+              borderColor: '#FFFFFF',
+              borderWidth: 2,
+              pointRadius: 7,
+              pointHoverRadius: 9,
+              showLine: false,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return `Temp: ${context.parsed.x}°F | Sales Impact: ${context.parsed.y.toFixed(2)}%`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              type: 'linear',
+              position: 'bottom',
+              min: 10,
+              max: 110,
+              title: { display: true, text: 'Temperature (°F)', font: { size: 11, weight: 'bold' }, color: '#94A3B8' },
+              grid: { color: '#F1F5F9' },
+              ticks: { font: { family: 'JetBrains Mono', size: 10 }, color: '#64748B' }
+            },
+            y: {
+              title: { display: true, text: 'Expected Sales Lift / Drag (%)', font: { size: 11, weight: 'bold' }, color: '#94A3B8' },
+              grid: { color: '#E2E8F0' },
+              ticks: {
+                callback: function(val) { return val + '%'; },
+                font: { family: 'JetBrains Mono', size: 10 },
+                color: '#64748B'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function computeWeatherImpact(temp, stateCode, hasSnow, hasWildfire) {
+      const p = weatherParams[stateCode] || weatherParams.TX;
+      let impact = 0;
+
+      if (temp < p.coldKink) {
+        impact = (temp - p.coldKink) * Math.abs(p.coldSlope);
+      } else if (temp > p.hotKink) {
+        impact = (p.hotKink - temp) * Math.abs(p.hotSlope);
+      } else {
+        impact = 0.0;
+      }
+
+      if (hasSnow && temp <= 32) {
+        impact = impact * 2.0 - 2.5; // Snowfall multiplier
+      }
+
+      if (hasWildfire && stateCode === 'CA') {
+        impact -= 4.2; // Wildfire AQI penalty
+      }
+
+      return impact;
+    }
+
+    function onWeatherStateChange() {
+      const stateSelect = document.getElementById('weatherStateSelect');
+      const stateCode = stateSelect.value;
+      const p = weatherParams[stateCode];
+
+      document.getElementById('chartStateTitle').innerText = `${p.name} Piecewise Thermal Kink Curve`;
+
+      const hasSnow = document.getElementById('snowfallToggle').checked;
+      const hasWildfire = document.getElementById('wildfireToggle').checked;
+
+      // Generate curve points from 10 to 110 deg
+      const curvePoints = [];
+      for (let t = 10; t <= 110; t += 2) {
+        curvePoints.push({ x: t, y: computeWeatherImpact(t, stateCode, hasSnow, hasWildfire) });
+      }
+
+      const activeY = computeWeatherImpact(currentTemp, stateCode, hasSnow, hasWildfire);
+
+      if (charts.weather) {
+        charts.weather.data.datasets[0].data = curvePoints;
+        charts.weather.data.datasets[1].data = [{ x: currentTemp, y: activeY }];
+        charts.weather.update();
+      }
+
+      // Update 10% loss temperatures
+      // T_loss,10% = Kink +/- 10 / |slope|
+      const coldLoss = (p.coldKink - (10 / Math.abs(p.coldSlope))).toFixed(1);
+      const hotLoss = (p.hotKink + (10 / Math.abs(p.hotSlope))).toFixed(1);
+
+      document.getElementById('coldLossTemp').innerText = `${coldLoss}°F`;
+      document.getElementById('hotLossTemp').innerText = `${hotLoss}°F`;
+
+      updateWeatherReadout(currentTemp, activeY, p);
+    }
+
+    function onTempSliderChange() {
+      const slider = document.getElementById('tempSlider');
+      currentTemp = parseFloat(slider.value);
+      document.getElementById('tempDisplay').innerText = `${currentTemp.toFixed(1)}°F`;
+
+      const stateCode = document.getElementById('weatherStateSelect').value;
+      const p = weatherParams[stateCode];
+      const hasSnow = document.getElementById('snowfallToggle').checked;
+      const hasWildfire = document.getElementById('wildfireToggle').checked;
+
+      const activeY = computeWeatherImpact(currentTemp, stateCode, hasSnow, hasWildfire);
+
+      if (charts.weather) {
+        charts.weather.data.datasets[1].data = [{ x: currentTemp, y: activeY }];
+        charts.weather.update('none'); // fast update
+      }
+
+      updateWeatherReadout(currentTemp, activeY, p);
+    }
+
+    function updateWeatherReadout(temp, impact, p) {
+      const impactEl = document.getElementById('expectedSalesImpact');
+      const badgeEl = document.getElementById('regimeBadge');
+
+      impactEl.innerText = `${impact >= 0 ? '+' : ''}${impact.toFixed(2)}%`;
+      impactEl.className = `text-sm font-mono font-bold ${impact < 0 ? 'text-red-700' : 'text-emerald-700'}`;
+
+      if (temp < p.coldKink) {
+        badgeEl.className = "text-xs font-bold text-blue-800 bg-blue-100 px-2 py-0.5 rounded";
+        badgeEl.innerText = `Cold Drag Regime (Below ${p.coldKink}°F)`;
+      } else if (temp > p.hotKink) {
+        badgeEl.className = "text-xs font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded";
+        badgeEl.innerText = `Thermal Drag Regime (Above ${p.hotKink}°F)`;
+      } else {
+        badgeEl.className = "text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded";
+        badgeEl.innerText = `Comfort Zone (${p.coldKink}°F – ${p.hotKink}°F)`;
+      }
+    }
+
+    // --- VIEW 4: GAS LEAD/LAG & CALENDAR PULSES ---
+    function initGasLeadLagChart() {
+      const ctx = document.getElementById('gasLeadLagChart').getContext('2d');
+      charts.gas = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Lead -4w', 'Lead -3w', 'Lead -2w', 'Lead -1w', 't0 (In-Week)', 'Lag +1w', 'Lag +2w', 'Lag +3w (CC Spike)', 'Lag +4w'],
+          datasets: [{
+            label: 'Sales Correlation with Gas Price Shock',
+            data: [-0.01, -0.01, 0.00, 0.00, 0.00, 0.02, 0.06, 0.10, 0.04],
+            borderColor: '#00733B',
+            backgroundColor: 'rgba(0, 115, 59, 0.1)',
+            borderWidth: 2.5,
+            pointBackgroundColor: function(context) {
+              return context.dataIndex === 7 ? '#EF4444' : '#00733B';
+            },
+            pointRadius: function(context) {
+              return context.dataIndex === 7 ? 6 : 4;
+            },
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return `Correlation Coefficient: ${context.parsed.y.toFixed(2)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#64748B' }
+            },
+            y: {
+              min: -0.05,
+              max: 0.15,
+              grid: { color: '#F1F5F9' },
+              ticks: {
+                callback: function(v) { return v.toFixed(2); },
+                font: { family: 'JetBrains Mono', size: 10 },
+                color: '#64748B'
+              },
+              title: { display: true, text: 'Correlation (r)', font: { size: 11, weight: 'bold' }, color: '#94A3B8' }
+            }
+          }
+        }
+      });
+    }
+
+    function simulateGasShock(deltaGas) {
+      const resEl = document.getElementById('gasSimulationResult');
+      if (deltaGas === 0) {
+        resEl.innerHTML = `Baseline status: Zero in-week friction (<span class="font-bold">t0 = 0.00</span>). Peak trade-down occurs at <span class="font-bold text-emerald-700">Lag +3 weeks (+0.10)</span>.`;
+        charts.gas.data.datasets[0].data = [-0.01, -0.01, 0.00, 0.00, 0.00, 0.02, 0.06, 0.10, 0.04];
+      } else {
+        const factor = deltaGas / 0.50;
+        const simulatedSalesLift = (factor * 1.85).toFixed(2);
+        resEl.innerHTML = `
+          Simulated ${deltaGas > 0 ? '+' : ''}${(deltaGas*100).toFixed(0)}¢/gal Gas Shock: 
+          Week 0 sales delta = <strong class="text-slate-900 font-mono">0.00%</strong>. 
+          By <strong class="text-emerald-700 font-mono">Lag +3 (21 days)</strong>, credit card bills trigger budget tightening, driving a projected <strong class="text-emerald-800 font-mono">${simulatedSalesLift > 0 ? '+' : ''}${simulatedSalesLift}% comp sales bump</strong> via grocery trade-down.
+        `;
+        charts.gas.data.datasets[0].data = [
+          -0.01 * factor, -0.01 * factor, 0.00, 0.00, 0.00,
+          0.02 * factor, 0.06 * factor, 0.10 * factor, 0.04 * factor
+        ];
+      }
+      charts.gas.update();
+    }
+
+    // Calendar Pulse Chart
+    function initCalendarPulseChart() {
+      const ctx = document.getElementById('calendarPulseChart').getContext('2d');
+      charts.calendar = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 7', 'Day 10', 'Day 15', 'Day 20', 'Day 25', 'Day 30'],
+          datasets: [{
+            label: 'Sales Index vs Monthly Baseline (%)',
+            data: [+18.5, +17.2, +19.8, +14.1, +9.5, +3.2, -1.0, -4.5, -3.2, -1.8, -0.5],
+            backgroundColor: function(context) {
+              const val = context.raw;
+              return val >= 0 ? '#059669' : '#94A3B8';
+            },
+            borderRadius: 3,
+            barThickness: 24,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(c) {
+                  return `Basket Lift: ${c.raw > 0 ? '+' : ''}${c.raw}%`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#64748B' }
+            },
+            y: {
+              grid: { color: '#F1F5F9' },
+              ticks: {
+                callback: function(v) { return v + '%'; },
+                font: { family: 'JetBrains Mono', size: 10 },
+                color: '#64748B'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updateCalendarChart() {
+      const val = document.getElementById('calendarShockSelect').value;
+      const title = document.getElementById('calendarEventTitle');
+      const desc = document.getElementById('calendarEventDesc');
+      const stat = document.getElementById('calendarEventStatus');
+
+      if (val === 'snap') {
+        title.innerText = "1st & 3rd Benefit Liquidity Surge";
+        desc.innerText = "State Electronic Benefit Transfer (EBT/SNAP) disbursements and Supplemental Security Income (SSI) deliver substantial cash infusions on the 1st and 3rd of each calendar month. Dollar Tree comp stores experience an immediate +15% to +20% basket volume surge over days 1–5, dissipating rapidly by day 15.";
+        stat.innerText = "Harmonized via Day-of-Month Dum.";
+        charts.calendar.data.labels = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 7', 'Day 10', 'Day 15', 'Day 20', 'Day 25', 'Day 30'];
+        charts.calendar.data.datasets[0].data = [+18.5, +17.2, +19.8, +14.1, +9.5, +3.2, -1.0, -4.5, -3.2, -1.8, -0.5];
+      } else if (val === 'easter') {
+        title.innerText = "Easter Pantry Load (T-1) vs Slump (T+1)";
+        desc.innerText = "Easter seasonal peaks manifest in an intense 7-day pre-holiday inventory pull (candy, baskets, spring decor), peaking at +24% in T-1 week. Immediately in T+1, post-holiday sales drop into a -8.5% slump as shoppers work through pantry inventory.";
+        stat.innerText = "Controlled via Moving Holiday Dummy";
+        charts.calendar.data.labels = ['T-3 Weeks', 'T-2 Weeks', 'T-1 Week (Pantry Load)', 'Easter Week (T0)', 'T+1 Week (Slump)', 'T+2 Weeks'];
+        charts.calendar.data.datasets[0].data = [+4.2, +12.8, +24.1, +11.5, -8.5, -1.2];
+      } else if (val === 'halloween') {
+        title.innerText = "Halloween Surge (Confectionery Impulse)";
+        desc.innerText = "Halloween exhibits late-cycle acceleration. 65% of volume transacts in the final 10 days before October 31st, driven by multi-price candy packs and party supplies. Strong cross-initiative synergy with MPP.";
+        stat.innerText = "Normalized across October POS";
+        charts.calendar.data.labels = ['Oct 1-7', 'Oct 8-14', 'Oct 15-21', 'Oct 22-27', 'Oct 28-31 (Peak)', 'Nov 1-4 (Clearance)'];
+        charts.calendar.data.datasets[0].data = [+2.1, +5.4, +11.2, +21.8, +36.4, -12.5];
+      } else if (val === 'christmas') {
+        title.innerText = "Q4 Holiday Ramp (Nov 15 - Dec 24)";
+        desc.innerText = "The paramount retail quarter where gift wrap, ornaments, holiday crafts, and stocking stuffers drive continuous comp lift across all 6 store archetypes, peaking in the week prior to Christmas Eve.";
+        stat.innerText = "Harmonized via Retail 4-5-4 Calendar";
+        charts.calendar.data.labels = ['Nov W1', 'Nov W2', 'Nov W3 (Thanksgiving)', 'Dec W1', 'Dec W2', 'Dec W3 (Peak)', 'Dec W4'];
+        charts.calendar.data.datasets[0].data = [+6.5, +9.8, +18.2, +22.4, +28.9, +41.5, +14.2];
+      }
+      charts.calendar.update();
+    }
+
+    // --- VIEW 5: LMDI DECOMPOSITION & WATERFALL ---
+    function setLaunchMode(mode) {
+      const softBtn = document.getElementById('toggleSoftLaunch');
+      const hardBtn = document.getElementById('toggleHardLaunch');
+
+      if (mode === 'soft') {
+        softBtn.className = "px-3 py-1.5 rounded-md bg-white text-slate-900 shadow-sm transition-colors";
+        hardBtn.className = "px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition-colors";
+        document.getElementById('stage1Title').innerText = "First Scan of $3–$5 SKU";
+        document.getElementById('stage1Desc').innerText = "Merchandise arrives on floor; initial cashier scans occur without full store signage.";
+      } else {
+        hardBtn.className = "px-3 py-1.5 rounded-md bg-white text-slate-900 shadow-sm transition-colors";
+        softBtn.className = "px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition-colors";
+        document.getElementById('stage1Title').innerText = "Pre-Launch Inventory Intake";
+        document.getElementById('stage1Desc').innerText = "Backroom staging complete; operations team audits endcap readiness.";
+      }
+    }
+
+    function initLMDIWaterfallChart() {
+      const ctx = document.getElementById('lmdiWaterfallChart').getContext('2d');
+      charts.lmdi = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Baseline Sales', '+$Txn Volume', '+$AUR (Price Mix)', '-$UPT (Basket Drag)', 'Final Observed Sales'],
+          datasets: [{
+            label: 'Weekly Sales ($)',
+            data: [38500, 962, 2624, -462, 41624],
+            backgroundColor: [
+              '#64748B', // Baseline Slate
+              '#059669', // Txn Green
+              '#0284c7', // AUR Sky
+              '#d97706', // UPT Amber
+              '#047857'  // Total Forest
+            ],
+            borderRadius: 4,
+            barThickness: 32,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const val = context.raw;
+                  return `$${val >= 0 ? '+' : ''}${Math.round(val).toLocaleString()}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#64748B' }
+            },
+            y: {
+              grid: { color: '#F1F5F9' },
+              ticks: {
+                callback: function(v) { return '$' + (v / 1000).toFixed(0) + 'k'; },
+                font: { family: 'JetBrains Mono', size: 10 },
+                color: '#64748B'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function calculateLMDI() {
+      const txnPct = parseFloat(document.getElementById('sliderTxn').value);
+      const aurPct = parseFloat(document.getElementById('sliderAUR').value);
+      const uptPct = parseFloat(document.getElementById('sliderUPT').value);
+
+      document.getElementById('sliderTxnVal').innerText = `${txnPct >= 0 ? '+' : ''}${txnPct.toFixed(1)}%`;
+      document.getElementById('sliderAURVal').innerText = `${aurPct >= 0 ? '+' : ''}${aurPct.toFixed(1)}%`;
+      document.getElementById('sliderUPTVal').innerText = `${uptPct >= 0 ? '+' : ''}${uptPct.toFixed(1)}%`;
+
+      const baseSales = 38500; // Baseline Dollar Tree weekly volume per store
+
+      // Logarithmic Mean Divisia Index exact formula:
+      // Y0 = T0 * U0 * A0
+      // Y1 = T1 * U1 * A1
+      const T0 = 2500; // Base Transactions
+      const U0 = 8.5;  // Base UPT
+      const A0 = 1.81; // Base AUR (~$1.25 base + legacy higher)
+      // T0 * U0 * A0 = 2500 * 8.5 * 1.81176 = 38500
+
+      const T1 = T0 * (1 + txnPct / 100);
+      const U1 = U0 * (1 + uptPct / 100);
+      const A1 = A0 * (1 + aurPct / 100);
+      const Y1 = T1 * U1 * A1;
+      const deltaY = Y1 - baseSales;
+
+      // Log-mean weight: L(Y1, Y0) = (Y1 - Y0) / ln(Y1 / Y0)
+      let L_Y;
+      if (Math.abs(Y1 - baseSales) < 0.001) {
+        L_Y = baseSales;
+      } else {
+        L_Y = (Y1 - baseSales) / Math.log(Y1 / baseSales);
+      }
+
+      const deltaTxnDollar = L_Y * Math.log(T1 / T0);
+      const deltaUPTDollar = L_Y * Math.log(U1 / U0);
+      const deltaAURDollar = L_Y * Math.log(A1 / A0);
+
+      // Verify exact sum = deltaY (0% residual)
+      const totalDollarLift = deltaY;
+      const totalPctLift = (deltaY / baseSales) * 100;
+
+      document.getElementById('totalSalesLiftVal').innerText = `+$${Math.round(totalDollarLift).toLocaleString()} / wk (${totalPctLift >= 0 ? '+' : ''}${totalPctLift.toFixed(2)}%)`;
+
+      document.getElementById('lmdiTxnDollar').innerText = `${deltaTxnDollar >= 0 ? '+' : ''}$${Math.round(deltaTxnDollar).toLocaleString()}`;
+      document.getElementById('lmdiAURDollar').innerText = `${deltaAURDollar >= 0 ? '+' : ''}$${Math.round(deltaAURDollar).toLocaleString()}`;
+      document.getElementById('lmdiUPTDollar').innerText = `${deltaUPTDollar >= 0 ? '+' : ''}$${Math.round(deltaUPTDollar).toLocaleString()}`;
+
+      if (Math.abs(deltaY) > 1) {
+        document.getElementById('lmdiTxnShare').innerText = `${((deltaTxnDollar / deltaY) * 100).toFixed(1)}% of Lift`;
+        document.getElementById('lmdiAURShare').innerText = `${((deltaAURDollar / deltaY) * 100).toFixed(1)}% of Lift`;
+        document.getElementById('lmdiUPTShare').innerText = `${((deltaUPTDollar / deltaY) * 100).toFixed(1)}% of Lift`;
+      }
+
+      if (charts.lmdi) {
+        charts.lmdi.data.datasets[0].data = [
+          baseSales,
+          Math.round(deltaTxnDollar),
+          Math.round(deltaAURDollar),
+          Math.round(deltaUPTDollar),
+          Math.round(Y1)
+        ];
+        charts.lmdi.update();
+      }
+    }
+
+    function resetLMDI() {
+      document.getElementById('sliderTxn').value = 2.5;
+      document.getElementById('sliderAUR').value = 6.8;
+      document.getElementById('sliderUPT').value = -1.2;
+      calculateLMDI();
+    }
+  </script>
+</body>
+</html>

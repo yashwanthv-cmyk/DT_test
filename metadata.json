@@ -1,0 +1,6 @@
+{
+  "name": "Dollar Tree Causal Lift Engine",
+  "description": "Executive Causal Attribution & Store Clustering Engine (Phase 1 MVP) for Dollar Tree store sales analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

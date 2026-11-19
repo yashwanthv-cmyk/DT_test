@@ -93,13 +93,11 @@
 
       <!-- Zone 2: Navigation Links / View Breadcrumbs -->
       <div class="hidden md:flex items-center gap-6 text-xs font-medium text-slate-600">
-        <span class="text-slate-900 font-semibold">Store Sales Attribution</span>
-        <span class="text-slate-300">/</span>
-        <span>Causal Lift Engine</span>
+        <span class="text-slate-900 font-semibold">Store Sales Lift &amp; Attribution</span>
         <span class="text-slate-300">·</span>
-        <span class="text-slate-700 font-medium">Scope: <strong class="text-slate-900 font-mono">USA Stores Only</strong> (8,994 Comp)</span>
+        <span class="text-slate-700 font-medium">Scope: <strong class="text-slate-900 font-mono">US Comparable Stores</strong> (8,994)</span>
         <span class="text-slate-300">·</span>
-        <span class="text-slate-500 font-mono">BSTS Granularity: Cluster &times; Wave (12M Pre / 6M Post)</span>
+        <span class="text-slate-500 font-mono">Window: 12M Before / 6M After Launch</span>
       </div>
 
       <!-- Zone 3: Primary Action / Quick Controls -->
@@ -110,7 +108,7 @@
         </button>
         <button onclick="switchTab('tab-bsts')" class="px-3.5 py-1.5 text-xs font-medium text-white bg-dt-emerald hover:bg-dt-forest rounded shadow-sm transition-colors flex items-center gap-2">
           <i class="fa-solid fa-chart-line"></i>
-          <span>BSTS Model &amp; Simulator</span>
+          <span>Deep Dive into Lift Estimates</span>
         </button>
       </div>
 
@@ -125,9 +123,9 @@
       
       <!-- Navigation Header Title -->
       <div class="p-4 border-b border-slate-800">
-        <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Store Sales Attribution</div>
+        <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Store Sales Lift &amp; Attribution</div>
         <div class="text-sm font-semibold text-white">
-          Causal Lift Engine
+          Executive Dashboard
         </div>
       </div>
 
@@ -138,7 +136,7 @@
           <i class="fa-solid fa-chart-pie w-4 text-center text-emerald-400"></i>
           <div class="flex-1 truncate">
             <div class="font-semibold">Executive Overview</div>
-            <div class="text-[10px] text-slate-400 truncate">Scope, Milestones & Launch Timing</div>
+            <div class="text-[10px] text-slate-400 truncate">Lift Breakdown &amp; Rollout Counts</div>
           </div>
         </button>
 
@@ -146,15 +144,15 @@
           <i class="fa-solid fa-network-wired w-4 text-center text-slate-400"></i>
           <div class="flex-1 truncate">
             <div class="font-semibold">Store Clustering</div>
-            <div class="text-[10px] text-slate-500 truncate">Feature Buckets & 6 Archetypes</div>
+            <div class="text-[10px] text-slate-500 truncate">Cluster Profiles &amp; Store Groups</div>
           </div>
         </button>
 
         <button onclick="switchTab('tab-bsts')" id="nav-tab-bsts" class="w-full text-left px-3 py-2.5 rounded text-xs font-medium flex items-center gap-3 transition-colors text-slate-400 hover:text-slate-200 hover:bg-slate-800">
           <i class="fa-solid fa-chart-line w-4 text-center text-slate-400"></i>
           <div class="flex-1 truncate">
-            <div class="font-semibold">BSTS Model</div>
-            <div class="text-[10px] text-slate-500 truncate">Wave &amp; Control Pool Simulator</div>
+            <div class="font-semibold">Deep Dive into Lift Estimates</div>
+            <div class="text-[10px] text-slate-500 truncate">Rules, Pool Counts &amp; Simulator</div>
           </div>
         </button>
 
@@ -173,154 +171,94 @@
           
           <!-- Header title block -->
           <div class="border-b border-slate-200 pb-5">
-            <div class="text-xs font-bold uppercase tracking-wider text-dt-emerald">Phase 1 Summary</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-dt-emerald">Summary</div>
             <h1 class="text-2xl font-bold text-slate-900 tracking-tight mt-1">Executive Overview</h1>
             <p class="text-sm text-slate-600 mt-1 max-w-3xl">
-              Performance tracking across 8,994 comparable Dollar Tree stores in the US (open 15 or more consecutive months out of 9,344 total fleet). Evaluating store sales lift across Multi-Price Point (MPP), Dedicated Cashier (DC), and Paint &amp; Powder (P&amp;P).
+              Tracking sales changes across 8,994 comparable Dollar Tree stores in the US (open 15 or more consecutive months out of 9,344 total stores) for Multi-Price Point (MPP), Dedicated Cashier (DC), and Paint &amp; Powder (P&amp;P).
             </p>
           </div>
 
-          <!-- PROJECT AGENDA: TOTAL LIFT & CAUSAL DECOMPOSITION -->
+          <!-- TOTAL SALES LIFT BREAKDOWN WATERFALL -->
           <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm space-y-5">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
               <div>
                 <div class="flex items-center gap-2">
                   <span class="text-xs font-bold uppercase tracking-wider text-dt-emerald">
-                    <i class="fa-solid fa-bullseye mr-1.5"></i>Project Agenda
+                    <i class="fa-solid fa-chart-bar mr-1.5"></i>Sales Lift Breakdown
                   </span>
-                  <span class="text-[10px] font-mono bg-amber-50 text-amber-900 px-2 py-0.5 rounded border border-amber-200 font-semibold">
-                    Illustrative Example
+                  <span class="text-[10px] font-mono bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200 font-semibold">
+                    Pre-12M / Post-6M &middot; MAPE &lt; 5%
                   </span>
                 </div>
-                <h2 class="text-base font-bold text-slate-900 mt-1">Total Sales Lift &amp; Attribution Decomposition</h2>
+                <h2 class="text-base font-bold text-slate-900 mt-1">Total Sales Lift Breakdown by Factor</h2>
                 <p class="text-xs text-slate-500">
-                  Core objective: isolate how much of a store&rsquo;s total sales lift truly comes from an initiative versus external factors, store characteristics, and unexplained noise.
+                  Separating preliminary initiative lift from external factors, store characteristics (population, income, location), and unexplained changes.
                 </p>
               </div>
               <div class="flex items-center gap-3 bg-emerald-950 text-white px-4 py-2.5 rounded-lg border border-emerald-800 shrink-0">
                 <div>
-                  <div class="text-[10px] font-semibold uppercase tracking-wider text-emerald-300">Total Observed Lift</div>
-                  <div class="text-2xl font-extrabold font-mono tabular-nums text-white leading-tight">5.0%</div>
+                  <div class="text-[10px] font-semibold uppercase tracking-wider text-emerald-300" id="wfSummaryLabel">Total Lift (Est.)</div>
+                  <div class="text-2xl font-extrabold font-mono tabular-nums text-white leading-tight" id="wfTotalLiftValue">+5.35%</div>
                 </div>
                 <div class="h-8 w-px bg-emerald-800"></div>
-                <div class="text-[11px] text-emerald-200 leading-tight font-mono">
-                  1% + 1% + 2% + 1%
+                <div class="text-right">
+                  <div class="text-[10px] font-semibold uppercase tracking-wider text-emerald-300">Initiative Impact</div>
+                  <div class="text-sm font-bold font-mono tabular-nums text-emerald-200" id="wfInitiativeLiftValue">+2.35%</div>
                 </div>
               </div>
             </div>
 
-            <!-- Proportional Stacked Bar (100% of the 5% Total Lift) -->
-            <div class="space-y-2">
-              <div class="flex items-center justify-between text-[11px] font-semibold text-slate-600">
-                <span>Illustrative Breakdown of 5% Total Store Lift</span>
-                <span class="font-mono text-emerald-800">True Initiative Share: 2% of 5% (40% of Total Lift)</span>
+            <!-- 6 Initiative/Model Filters & 4 Metric Filters -->
+            <div class="bg-slate-50 rounded-lg border border-slate-200 p-4 space-y-3">
+              <div>
+                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-2">1. Select Initiative / Model (6 Models)</div>
+                <div id="wfModelFilters" class="flex flex-wrap gap-2">
+                  <!-- Populated via JS -->
+                </div>
               </div>
-              <div class="w-full h-9 rounded-lg overflow-hidden flex border border-slate-200 shadow-xs text-xs font-bold">
-                <div style="width: 20%;" class="bg-sky-600 text-white flex items-center justify-center gap-1.5 px-2 border-r border-white/30" title="External Factors: 1%">
-                  <span class="truncate">External: 1%</span>
+              <div class="pt-2 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5">2. Select Performance Metric</div>
+                  <div id="wfMetricFilters" class="flex flex-wrap gap-2">
+                    <!-- Populated via JS -->
+                  </div>
                 </div>
-                <div style="width: 20%;" class="bg-indigo-600 text-white flex items-center justify-center gap-1.5 px-2 border-r border-white/30" title="Important Store Features (Pop, Income, Location): 1%">
-                  <span class="truncate">Features: 1%</span>
-                </div>
-                <div style="width: 40%;" class="bg-dt-emerald text-white flex items-center justify-center gap-1.5 px-2 border-r border-white/30" title="Initiative Impact (MPP / DC / P&P): 2%">
-                  <i class="fa-solid fa-check-circle text-emerald-200 text-[11px]"></i>
-                  <span class="truncate">Initiative Lift: 2%</span>
-                </div>
-                <div style="width: 20%;" class="bg-slate-400 text-white flex items-center justify-center gap-1.5 px-2" title="Can't Explain (Unexplained Residual): 1%">
-                  <span class="truncate">Unexplained: 1%</span>
+                <div class="text-xs font-mono text-slate-700 bg-white px-3 py-2 rounded border border-slate-200 shrink-0">
+                  Qualifying Waves (MAPE &lt; 5%): <strong class="text-emerald-800" id="wfWaveCount">104</strong>
                 </div>
               </div>
             </div>
 
-            <!-- 4 Decomposition Component Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-              
-              <!-- 1% External -->
-              <div class="p-3.5 rounded-lg bg-sky-50/60 border border-sky-200 flex flex-col justify-between">
-                <div>
-                  <div class="flex items-center justify-between mb-1.5">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-sky-900">External Factors</span>
-                    <span class="text-sm font-extrabold font-mono text-sky-800">1%</span>
-                  </div>
-                  <p class="text-[11px] text-slate-600 leading-relaxed">
-                    Macro economy, gas prices, inflation, weather shifts, and calendar seasonality.
-                  </p>
-                </div>
-                <div class="mt-2.5 pt-2 border-t border-sky-200/70 text-[10px] font-mono text-sky-800">
-                  Captured via control baseline
-                </div>
-              </div>
+            <!-- Waterfall Chart Canvas -->
+            <div class="h-72 w-full relative">
+              <canvas id="liftWaterfallChart"></canvas>
+            </div>
 
-              <!-- 1% Important Features -->
-              <div class="p-3.5 rounded-lg bg-indigo-50/60 border border-indigo-200 flex flex-col justify-between">
-                <div>
-                  <div class="flex items-center justify-between mb-1.5">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-900">Important Features</span>
-                    <span class="text-sm font-extrabold font-mono text-indigo-800">1%</span>
-                  </div>
-                  <p class="text-[11px] text-slate-600 leading-relaxed">
-                    Store &amp; market profile: <strong>Population, Income, and Location</strong> differences.
-                  </p>
-                </div>
-                <div class="mt-2.5 pt-2 border-t border-indigo-200/70 text-[10px] font-mono text-indigo-800">
-                  Controlled via 6 Store Clusters
-                </div>
-              </div>
-
-              <!-- 2% Initiative -->
-              <div class="p-3.5 rounded-lg bg-emerald-50 border-2 border-emerald-500 flex flex-col justify-between shadow-xs">
-                <div>
-                  <div class="flex items-center justify-between mb-1.5">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-950">Initiative Impact</span>
-                    <span class="text-sm font-extrabold font-mono text-emerald-800">2%</span>
-                  </div>
-                  <p class="text-[11px] text-emerald-950/80 leading-relaxed">
-                    True incremental sales generated by <strong>MPP, Dedicated Cashier, or Paint &amp; Powder</strong>.
-                  </p>
-                </div>
-                <div class="mt-2.5 pt-2 border-t border-emerald-200 text-[10px] font-mono font-bold text-emerald-800">
-                  Primary Target of BSTS Model
-                </div>
-              </div>
-
-              <!-- 1% Can't Explain -->
-              <div class="p-3.5 rounded-lg bg-slate-50 border border-slate-200 flex flex-col justify-between">
-                <div>
-                  <div class="flex items-center justify-between mb-1.5">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-700">Can&rsquo;t Explain</span>
-                    <span class="text-sm font-extrabold font-mono text-slate-700">1%</span>
-                  </div>
-                  <p class="text-[11px] text-slate-600 leading-relaxed">
-                    Random store-level noise and unobserved local events outside available data.
-                  </p>
-                </div>
-                <div class="mt-2.5 pt-2 border-t border-slate-200 text-[10px] font-mono text-slate-500">
-                  Residual uncertainty band
-                </div>
-              </div>
-
+            <!-- Selected Model Preliminary Metrics Strip -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 border-t border-slate-100" id="wfPrelimMetricsStrip">
+              <!-- Populated via JS -->
             </div>
 
             <!-- Required Example Disclaimer Note -->
             <div class="text-center text-xs text-slate-500 italic font-medium pt-1">
-              <i class="fa-solid fa-circle-info mr-1 text-slate-400"></i>This is an example, Actual data yet to be considered
+              <i class="fa-solid fa-circle-info mr-1 text-slate-400"></i>Initiative Impact shows preliminary model estimates; External, Store Feature, and Unexplained shares are illustrative &mdash; This is an example, Actual data yet to be considered.
             </div>
           </div>
 
-          <!-- ANNUAL INITIATIVE ROLLOUT CADENCE & FLEET PENETRATION TABLE -->
+          <!-- ANNUAL INITIATIVE ROLLOUT COUNTS & FLEET SHARE TABLE -->
           <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
               <div>
                 <div class="flex items-center gap-2">
                   <span class="text-xs font-bold uppercase tracking-wider text-dt-emerald">
-                    <i class="fa-solid fa-calendar-check mr-1.5"></i>Fleet Rollout Schedule
+                    <i class="fa-solid fa-calendar-check mr-1.5"></i>Rollout Schedule
                   </span>
                   <span class="text-[10px] font-mono bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200 font-semibold">
                     2024 &ndash; 2026 Deployment
                   </span>
                 </div>
-                <h2 class="text-base font-bold text-slate-900 mt-1">Initiative Store Rollout Counts &amp; Fleet Penetration by Year</h2>
-                <p class="text-xs text-slate-500">Official store rollout counts and cumulative penetration percentage across the 8,994 comparable store fleet</p>
+                <h2 class="text-base font-bold text-slate-900 mt-1">Store Rollout Counts by Year</h2>
+                <p class="text-xs text-slate-500">Store rollout counts and share of the 8,994 comparable US store fleet each year</p>
               </div>
               <div class="flex items-center gap-2">
                 <span class="text-xs font-mono font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded border border-slate-200">
@@ -440,376 +378,6 @@
 
           </div>
 
-          <!-- MVP SCOPE & MODEL GRANULARITY ARCHITECTURAL FOUNDATION -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            
-            <!-- Scope Limitation Card -->
-            <div class="bg-emerald-950 text-white rounded-lg p-4 border border-emerald-800 flex items-start gap-3.5 shadow-sm">
-              <div class="w-9 h-9 rounded-lg bg-emerald-800/80 border border-emerald-600/50 flex items-center justify-center shrink-0 text-emerald-300">
-                <i class="fa-solid fa-flag-usa text-base"></i>
-              </div>
-              <div class="space-y-1">
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Analysis Scope</span>
-                  <span class="text-[10px] font-mono bg-emerald-900 text-emerald-200 px-1.5 py-0.5 rounded border border-emerald-700 font-semibold">Requirement</span>
-                </div>
-                <div class="text-sm font-bold text-white">The Scope of the MVP Phase is Limited to USA Stores Only</div>
-                <p class="text-xs text-emerald-200/80 leading-relaxed">
-                  Evaluation is limited to the <strong class="text-white">8,994 comparable USA stores</strong> that have been open for at least 15 consecutive months out of 9,344 total stores. Canadian and non-contiguous locations are excluded from Phase 1.
-                </p>
-              </div>
-            </div>
-
-            <!-- Granularity & BSTS Model Card -->
-            <div class="bg-slate-900 text-white rounded-lg p-4 border border-slate-800 flex items-start gap-3.5 shadow-sm">
-              <div class="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 text-emerald-400">
-                <i class="fa-solid fa-chart-line text-base"></i>
-              </div>
-              <div class="space-y-1.5 flex-1">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Model Specification</span>
-                    <span class="text-[10px] font-mono bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-800 font-semibold">BSTS Model</span>
-                  </div>
-                  <span class="text-[10px] font-mono text-emerald-400">Cluster &times; Wave</span>
-                </div>
-                <div class="text-sm font-bold text-white">
-                  Granularity of BSTS model: <span class="font-mono text-emerald-400">(cluster &times; month_year(wave))</span>
-                </div>
-                <div class="inline-flex items-center gap-1.5 text-xs text-amber-300 bg-slate-800/90 px-2 py-0.5 rounded border border-slate-700 font-mono">
-                  <i class="fa-solid fa-calendar-days text-[11px] text-amber-400"></i>
-                  <span>Time period: 12Months Pre launch, 6Months Post launch of initiative</span>
-                </div>
-                <p class="text-xs text-slate-300 leading-relaxed pt-0.5">
-                  The model uses <strong class="text-white">12 months prior to launch</strong> to estimate counterfactual baseline sales across unobserved store trends and seasonality, and evaluates causal lift across <strong class="text-white">6 months post-launch</strong>.
-                </p>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- PROJECT MILESTONES: ROADMAP VISUAL -->
-          <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 border-b border-slate-100 pb-4">
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold uppercase tracking-wider text-dt-emerald">Execution Roadmap</span>
-                  <span class="text-[10px] font-mono bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200 font-semibold">Phase 1 Workstream</span>
-                </div>
-                <h2 class="text-base font-bold text-slate-900 mt-1">Project Milestone Roadmap</h2>
-                <p class="text-xs text-slate-500">End-to-end progression: completed foundations, current active modeling, and upcoming causal validation</p>
-              </div>
-
-              <!-- Roadmap Legend / Status Summary -->
-              <div class="flex items-center gap-3 text-xs">
-                <span class="inline-flex items-center gap-1.5 text-slate-600">
-                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span> Completed (01-02)
-                </span>
-                <span class="inline-flex items-center gap-1.5 text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1 rounded border border-emerald-300">
-                  <span class="w-2 h-2 rounded-full bg-emerald-600 animate-ping"></span> Current Status (03)
-                </span>
-                <span class="inline-flex items-center gap-1.5 text-slate-500">
-                  <span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span> Next Steps (04)
-                </span>
-              </div>
-            </div>
-
-            <!-- Stepper Progress Track (Horizontal on md/lg screens) -->
-            <div class="hidden md:flex items-center justify-between mb-5 px-4 text-xs font-medium">
-              <div class="flex items-center gap-2 text-emerald-800 font-semibold">
-                <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px] font-bold">1</span>
-                <span>Scope &amp; Harmonization</span>
-              </div>
-              <div class="flex-1 h-0.5 bg-emerald-500 mx-3"></div>
-
-              <div class="flex items-center gap-2 text-emerald-800 font-semibold">
-                <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px] font-bold">2</span>
-                <span>Controls &amp; Clustering</span>
-              </div>
-              <div class="flex-1 h-0.5 bg-emerald-500 mx-3"></div>
-
-              <div class="flex items-center gap-2 text-emerald-900 font-bold bg-emerald-100/80 px-3 py-1.5 rounded-full border border-emerald-400 shadow-xs">
-                <span class="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center text-[11px] font-bold shadow-xs">3</span>
-                <span>Current: BSTS &amp; Forecasting</span>
-              </div>
-              <div class="flex-1 h-0.5 bg-dashed border-t-2 border-slate-300 mx-3"></div>
-
-              <div class="flex items-center gap-2 text-slate-500">
-                <span class="w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px] font-bold">4</span>
-                <span>Next: LMDI &amp; Validation</span>
-              </div>
-            </div>
-
-            <!-- 4 Stage Roadmap Cards Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              
-              <!-- Stage 1 (Completed) -->
-              <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-colors flex flex-col justify-between">
-                <div>
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-bold text-slate-700">01. Initiative Scope</span>
-                    <span class="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
-                      <i class="fa-solid fa-check mr-1"></i>Completed
-                    </span>
-                  </div>
-                  <div class="text-xs font-bold text-slate-900 mb-1">Scope &amp; Data Harmonization</div>
-                  <p class="text-xs text-slate-600 leading-relaxed mb-3">
-                    Defined 3 core programs (MPP, DC, P&amp;P) across 8,994 comp stores; harmonized 5 data streams (POS scans, store attributes, FRED macro, Meteostat weather, calendars).
-                  </p>
-                </div>
-                <div class="text-[11px] text-slate-500 font-mono pt-2 border-t border-slate-200 flex justify-between">
-                  <span>Foundations:</span>
-                  <strong class="text-slate-800">5 Streams Unified</strong>
-                </div>
-              </div>
-
-              <!-- Stage 2 (Completed) -->
-              <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-colors flex flex-col justify-between">
-                <div>
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-bold text-slate-700">02. Stratification</span>
-                    <span class="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
-                      <i class="fa-solid fa-check mr-1"></i>Completed
-                    </span>
-                  </div>
-                  <div class="text-xs font-bold text-slate-900 mb-1">Controls &amp; Store Clustering</div>
-                  <p class="text-xs text-slate-600 leading-relaxed mb-3">
-                    Calibrated temperature kinks and 3-week gas price lag. Segmented 8,994 stores into 6 stable LCA clusters with 4 control qualification rules.
-                  </p>
-                </div>
-                <div class="text-[11px] text-slate-500 font-mono pt-2 border-t border-slate-200 flex justify-between">
-                  <span>Store Groups:</span>
-                  <strong class="text-slate-800">6 Clusters Finalized</strong>
-                </div>
-              </div>
-
-              <!-- Stage 3 (CURRENT STATUS) -->
-              <div class="p-4 rounded-lg bg-emerald-50/70 border-2 border-emerald-600 shadow-sm relative flex flex-col justify-between ring-2 ring-emerald-500/10">
-                <div class="absolute -top-2.5 right-3">
-                  <span class="text-[10px] font-bold text-white bg-emerald-700 px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1.5 uppercase tracking-wider">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-200 animate-ping"></span>
-                    Current Status
-                  </span>
-                </div>
-                <div>
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-bold text-emerald-950">03. Causal Modeling</span>
-                  </div>
-                  <div class="text-xs font-bold text-emerald-950 mb-1">
-                    BSTS Modeling, Baseline Regression for Forecasting
-                  </div>
-                  <p class="text-xs text-emerald-950/80 leading-relaxed mb-3">
-                    Fitting Bayesian Structural Time Series (BSTS) and running baseline regression across the 12-month pre-launch window to forecast counterfactual sales for each test store.
-                  </p>
-                </div>
-                <div class="text-[11px] text-emerald-900 font-mono pt-2 border-t border-emerald-300/80 flex justify-between">
-                  <span>Current Status:</span>
-                  <strong class="text-emerald-800 font-bold">Active Modeling</strong>
-                </div>
-              </div>
-
-              <!-- Stage 4 (NEXT STEPS) -->
-              <div class="p-4 rounded-lg bg-slate-50/70 border border-slate-300 border-dashed hover:border-slate-400 transition-colors flex flex-col justify-between">
-                <div>
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-bold text-slate-600">04. Validation &amp; Split</span>
-                    <span class="text-[10px] font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded border border-amber-300 flex items-center gap-1">
-                      <i class="fa-solid fa-forward text-[9px]"></i>Next Steps
-                    </span>
-                  </div>
-                  <div class="text-xs font-bold text-slate-900 mb-1">LMDI, Validation</div>
-                  <p class="text-xs text-slate-600 leading-relaxed mb-3">
-                    Executing Logarithmic Mean Divisia Index (LMDI) exact decomposition (separating transaction volume, AUR price mix, and UPT basket drag with 0% residual) and conducting backtest placebo audits.
-                  </p>
-                </div>
-                <div class="text-[11px] text-slate-500 font-mono pt-2 border-t border-slate-200 flex justify-between">
-                  <span>Next Steps:</span>
-                  <strong class="text-slate-700">LMDI &amp; Validation</strong>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- LAUNCH DATE DEFINITIONS BY INITIATIVE (PLAIN LANGUAGE) -->
-          <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
-              <div>
-                <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-dt-emerald">
-                  <i class="fa-solid fa-clock-rotate-left"></i>
-                  <span>Launch Date Rules</span>
-                </div>
-                <h2 class="text-base font-bold text-slate-900 mt-0.5">How Initiative Launch Dates Are Defined</h2>
-                <p class="text-xs text-slate-500">How we decide when each program started so sales changes are measured from the right date</p>
-              </div>
-              <span class="text-xs font-mono font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded border border-slate-200">
-                Analysis Setup
-              </span>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-              
-              <!-- MPP Two Variations Card (8 cols) -->
-              <div class="lg:col-span-8 p-5 rounded-lg bg-emerald-50/60 border border-emerald-200 flex flex-col justify-between">
-                <div>
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-bold text-emerald-950 flex items-center gap-2">
-                      <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
-                      Multi-Price Point (MPP): Soft Launch vs. Roll Out
-                    </span>
-                    <span class="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
-                      Only for MPP
-                    </span>
-                  </div>
-                  <p class="text-xs text-slate-700 leading-relaxed mb-4">
-                    For MPP stores, higher-priced items often appear on shelves before the official rollout date. To capture when shoppers first see higher prices, we track both <strong>Soft Launch</strong> (from store sales data) and <strong>Roll Out</strong> (official Dollar Tree date) across two conversion paths:
-                  </p>
-                  
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 mb-4">
-                    
-                    <!-- Variation 1: DTP to MPP -->
-                    <div class="bg-white p-3.5 rounded-lg border border-emerald-300/80 shadow-xs flex flex-col justify-between">
-                      <div>
-                        <div class="flex items-center justify-between mb-2">
-                          <span class="text-[11px] font-bold text-emerald-900 uppercase tracking-wider">Path 1</span>
-                          <span class="text-[10px] font-mono font-semibold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">DTP &rarr; MPP</span>
-                        </div>
-                        <div class="text-xs font-bold text-slate-900 mb-2">Stores Converting DTP to MPP</div>
-                        
-                        <div class="space-y-2 text-xs">
-                          <div class="p-2 rounded bg-slate-50 border border-slate-100">
-                            <div class="flex items-center justify-between text-[11px] font-bold text-emerald-800">
-                              <span>1st Soft Launch</span>
-                              <i class="fa-solid fa-barcode text-emerald-600"></i>
-                            </div>
-                            <p class="text-[11px] text-slate-600 mt-0.5">
-                              Date when prices went over <strong>$1 on at least 1% of products</strong>.
-                            </p>
-                          </div>
-
-                          <div class="p-2 rounded bg-slate-50 border border-slate-100">
-                            <div class="flex items-center justify-between text-[11px] font-bold text-emerald-800">
-                              <span>2nd Soft Launch</span>
-                              <i class="fa-solid fa-tags text-emerald-600"></i>
-                            </div>
-                            <p class="text-[11px] text-slate-600 mt-0.5">
-                              Date when higher prices spread across <strong>more than 25 departments</strong>.
-                            </p>
-                          </div>
-
-                          <div class="p-2 rounded bg-emerald-50/80 border border-emerald-200">
-                            <div class="flex items-center justify-between text-[11px] font-bold text-emerald-950">
-                              <span>Roll Out</span>
-                              <i class="fa-solid fa-clipboard-check text-emerald-700"></i>
-                            </div>
-                            <p class="text-[11px] text-emerald-900 mt-0.5">
-                              <strong>Official date</strong> provided by Dollar Tree.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Variation 2: Legacy to MPP -->
-                    <div class="bg-white p-3.5 rounded-lg border border-emerald-300/80 shadow-xs flex flex-col justify-between">
-                      <div>
-                        <div class="flex items-center justify-between mb-2">
-                          <span class="text-[11px] font-bold text-emerald-900 uppercase tracking-wider">Path 2</span>
-                          <span class="text-[10px] font-mono font-semibold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Legacy &rarr; MPP</span>
-                        </div>
-                        <div class="text-xs font-bold text-slate-900 mb-2">Stores Converting Legacy to MPP</div>
-                        
-                        <div class="space-y-2 text-xs">
-                          <div class="p-2 rounded bg-slate-50 border border-slate-100">
-                            <div class="flex items-center justify-between text-[11px] font-bold text-emerald-800">
-                              <span>Soft Launch</span>
-                              <i class="fa-solid fa-barcode text-emerald-600"></i>
-                            </div>
-                            <p class="text-[11px] text-slate-600 mt-0.5">
-                              Date when prices went over <strong>$1 on at least 1% of products</strong>.
-                            </p>
-                          </div>
-
-                          <div class="p-2 rounded bg-slate-50/50 border border-dashed border-slate-200 text-slate-400">
-                            <div class="text-[11px] font-semibold flex items-center justify-between">
-                              <span>2nd Soft Stage</span>
-                              <span>Not Applicable</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500 mt-0.5">
-                              These stores move directly in one step after the initial soft launch.
-                            </p>
-                          </div>
-
-                          <div class="p-2 rounded bg-emerald-50/80 border border-emerald-200">
-                            <div class="flex items-center justify-between text-[11px] font-bold text-emerald-950">
-                              <span>Roll Out</span>
-                              <i class="fa-solid fa-clipboard-check text-emerald-700"></i>
-                            </div>
-                            <p class="text-[11px] text-emerald-900 mt-0.5">
-                              <strong>Official date</strong> provided by Dollar Tree.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-
-                  <div class="p-2.5 rounded bg-emerald-100/70 border border-emerald-300 text-xs text-emerald-950">
-                    <i class="fa-solid fa-circle-info mr-1 text-emerald-700"></i>
-                    <strong>Why This Matters:</strong> If we only used the Roll Out date, early price changes from the Soft Launch would get mixed into the &ldquo;before&rdquo; period and skew the baseline.
-                  </div>
-                </div>
-              </div>
-
-              <!-- DC and P&P Single Date Card (4 cols) -->
-              <div class="lg:col-span-4 p-5 rounded-lg bg-slate-50 border border-slate-200 flex flex-col justify-between">
-                <div>
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-bold text-slate-900 flex items-center gap-2">
-                      <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
-                      Dedicated Cashier &amp; Paint &amp; Powder
-                    </span>
-                    <span class="text-[10px] font-mono font-bold text-slate-700 bg-slate-200 px-2 py-0.5 rounded">
-                      Single Date
-                    </span>
-                  </div>
-                  <p class="text-xs text-slate-600 leading-relaxed mb-4">
-                    Unlike MPP, Dedicated Cashier and Paint &amp; Powder start on <strong>one clear date provided directly by Dollar Tree</strong> for each store:
-                  </p>
-
-                  <div class="space-y-3 mb-4">
-                    <div class="bg-white p-3 rounded border border-slate-200 text-xs">
-                      <div class="font-bold text-indigo-900 flex items-center justify-between">
-                        <span>Dedicated Cashier (DC):</span>
-                        <span class="font-mono text-[10px] text-indigo-700 font-semibold">1 Start Date</span>
-                      </div>
-                      <p class="text-[11px] text-slate-600 mt-1 leading-normal">
-                        The store go-live date provided by Dollar Tree when dedicated front-end cashier staffing began.
-                      </p>
-                    </div>
-
-                    <div class="bg-white p-3 rounded border border-slate-200 text-xs">
-                      <div class="font-bold text-amber-900 flex items-center justify-between">
-                        <span>Paint &amp; Powder (P&amp;P):</span>
-                        <span class="font-mono text-[10px] text-amber-700 font-semibold">1 Refresh Date</span>
-                      </div>
-                      <p class="text-[11px] text-slate-600 mt-1 leading-normal">
-                        The completion date provided by Dollar Tree after the overnight interior refresh finished (zero store closure days).
-                      </p>
-                    </div>
-                  </div>
-
-                  <div class="p-2.5 rounded bg-slate-200/70 border border-slate-300 text-xs text-slate-800">
-                    <i class="fa-solid fa-check-double mr-1 text-slate-600"></i>
-                    <strong>Clear Start Dates:</strong> No early soft-launch phase is needed for DC or P&amp;P.
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
         </section>
 
 
@@ -821,34 +389,91 @@
           <!-- View Header -->
           <div class="border-b border-slate-200 pb-5">
             <div class="text-xs font-bold uppercase tracking-wider text-dt-emerald">Store Clustering</div>
-            <h1 class="text-2xl font-bold text-slate-900 tracking-tight mt-1">Store Clustering &amp; LCA Archetypes</h1>
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight mt-1">Store Clustering &amp; Group Profiles</h1>
             <p class="text-sm text-slate-600 mt-1 max-w-3xl">
-              Grouping Dollar Tree stores into 6 homogeneous LCA clusters across demographic, store topology, economic, and shrink/risk traits.
+              Grouping Dollar Tree stores into 6 comparable groups based on neighborhood demographics, store format, sales volume, and risk profile.
             </p>
           </div>
 
-          <!-- DATAPOINTS USED IN CLUSTERING & VARIABLE BUCKETING (IMAGE 1 SPEC) -->
+          <!-- STORE CLUSTER ARCHETYPE PROFILES (MOVED TO TOP, NO '6') -->
+          <div class="space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h2 class="text-base font-bold text-slate-900">Store Cluster Archetype Profiles</h2>
+                <p class="text-xs text-slate-500">Click any cluster tile below to compare its store metrics and profile against the fleet average</p>
+              </div>
+              <span class="text-xs font-mono text-emerald-900 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200 font-semibold">
+                7,569 Clustered Stores Classified
+              </span>
+            </div>
+
+            <!-- 6 Compact Interactive Cluster Selector Tiles -->
+            <div id="archetypeGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+              <!-- Dynamically populated via JS as interactive selector tiles -->
+            </div>
+
+            <!-- Detailed Archetype Inspector & Radar (Full Width) -->
+            <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4" id="archetypeDetailHeader">
+                <!-- Selected Archetype Title and Metrics -->
+              </div>
+
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-5">
+                <!-- Radar Chart (5 cols) -->
+                <div class="lg:col-span-5 flex flex-col justify-between">
+                  <div>
+                    <div class="text-xs font-bold text-slate-800 uppercase tracking-wider">Cluster Profile Comparison (0–100 Scale)</div>
+                    <div class="text-[11px] text-slate-500">6 Key Store Scores vs. Fleet Average Baseline (7,569 Stores)</div>
+                  </div>
+                  <div class="h-72 relative flex items-center justify-center my-2">
+                    <canvas id="archetypeRadarChart"></canvas>
+                  </div>
+                  <div class="text-[10px] text-slate-500 text-center font-mono">
+                    Green = Selected Cluster &middot; Dashed Slate = Fleet Average
+                  </div>
+                  <div class="mt-1.5 text-center text-[11px] text-emerald-800 bg-emerald-50/70 border border-emerald-200 rounded py-1 px-2 font-medium">
+                    <i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i>Scores calculated directly from actual store group distributions
+                  </div>
+                </div>
+
+                <!-- Attributes & Exact Empirical Details (7 cols) -->
+                <div class="lg:col-span-7 flex flex-col justify-between space-y-4">
+                  <div id="archetypeAttributeList" class="space-y-3 text-xs">
+                    <!-- Populated via JS -->
+                  </div>
+
+                  <div id="archetypeDetailFooter" class="pt-3 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+                    <!-- Populated via JS -->
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- DATAPOINTS USED IN CLUSTERING & VARIABLE BUCKETING -->
           <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 border-b border-slate-100 pb-4">
               <div>
                 <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold uppercase tracking-wider text-dt-emerald">Feature Engineering &amp; Discretization</span>
-                  <span class="text-[10px] font-mono bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200 font-semibold">12 Core Dimensions</span>
+                  <span class="text-xs font-bold uppercase tracking-wider text-dt-emerald">Clustering Inputs</span>
+                  <span class="text-[10px] font-mono bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200 font-semibold">12 Store Factors</span>
                 </div>
-                <h2 class="text-base font-bold text-slate-900 mt-1">Datapoints Used in Clustering (Continuous Variable Bucketing)</h2>
-                <p class="text-xs text-slate-500">Continuous variables bucketed into discrete quantile/tier categories to enable robust Latent Class Analysis (LCA)</p>
+                <h2 class="text-base font-bold text-slate-900 mt-1">Datapoints Used in Clustering</h2>
+                <p class="text-xs text-slate-500">Store and neighborhood numbers grouped into clean tiers so similar stores stay together</p>
               </div>
               <span class="text-xs font-mono text-slate-600 bg-slate-50 px-2.5 py-1 rounded border border-slate-200">
-                LCA Feature Input Matrix
+                12 Grouping Factors
               </span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
               
-              <!-- Column 1: Demographics & Geography -->
+              <!-- Column 1: Neighborhood & Location -->
               <div class="rounded-lg border border-emerald-200 bg-emerald-50/40 overflow-hidden flex flex-col justify-between">
                 <div class="bg-emerald-800 text-white px-4 py-2.5 flex items-center justify-between">
-                  <span class="text-xs font-bold uppercase tracking-wider">1. Demographics &amp; Geography</span>
+                  <span class="text-xs font-bold uppercase tracking-wider">1. Neighborhood &amp; Location</span>
                   <i class="fa-solid fa-map-location-dot text-emerald-200 text-sm"></i>
                 </div>
                 
@@ -856,8 +481,8 @@
                   <!-- Dimension 1 -->
                   <div class="bg-white p-3 rounded-md border border-emerald-100 shadow-xs">
                     <div class="flex items-center justify-between text-slate-800 font-bold mb-1">
-                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-map text-emerald-700"></i>Census Zone Code</span>
-                      <span class="text-[10px] font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">Categorical</span>
+                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-map text-emerald-700"></i>US Region / Zone</span>
+                      <span class="text-[10px] font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">Category</span>
                     </div>
                     <div class="text-[11px] text-slate-600">
                       <strong>Zones 1 to 9</strong> (US Census Regions)
@@ -867,8 +492,8 @@
                   <!-- Dimension 2 -->
                   <div class="bg-white p-3 rounded-md border border-emerald-100 shadow-xs">
                     <div class="flex items-center justify-between text-slate-800 font-bold mb-1">
-                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-emerald-700"></i>Site Classification</span>
-                      <span class="text-[10px] font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">Categorical</span>
+                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-emerald-700"></i>Area Type</span>
+                      <span class="text-[10px] font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">Category</span>
                     </div>
                     <div class="text-[11px] text-slate-600">
                       <strong>Rural</strong>, <strong>Suburban</strong>, <strong>Urban</strong>
@@ -879,7 +504,7 @@
                   <div class="bg-white p-3 rounded-md border border-emerald-100 shadow-xs">
                     <div class="flex items-center justify-between text-slate-800 font-bold mb-1">
                       <span class="flex items-center gap-1.5"><i class="fa-solid fa-users text-emerald-700"></i>Population (3-Mile)</span>
-                      <span class="text-[10px] font-mono bg-emerald-100 px-1.5 py-0.5 rounded text-emerald-800 font-bold">4 Buckets</span>
+                      <span class="text-[10px] font-mono bg-emerald-100 px-1.5 py-0.5 rounded text-emerald-800 font-bold">4 Tiers</span>
                     </div>
                     <div class="text-[11px] text-slate-600 space-y-0.5">
                       <div>&bull; <strong class="text-slate-800">&lt;25k</strong> residents</div>
@@ -905,14 +530,14 @@
                 </div>
 
                 <div class="p-2.5 bg-emerald-100/50 border-t border-emerald-200 text-[10px] text-emerald-900 font-medium">
-                  Geographic &amp; socio-economic catchment definition
+                  Local market size, income, and region
                 </div>
               </div>
 
-              <!-- Column 2: Store Topology & Risk -->
+              <!-- Column 2: Store Format & Risk -->
               <div class="rounded-lg border border-slate-200 bg-slate-50/60 overflow-hidden flex flex-col justify-between">
                 <div class="bg-slate-800 text-white px-4 py-2.5 flex items-center justify-between">
-                  <span class="text-xs font-bold uppercase tracking-wider">2. Store Topology &amp; Risk</span>
+                  <span class="text-xs font-bold uppercase tracking-wider">2. Store Format &amp; Risk</span>
                   <i class="fa-solid fa-store text-slate-300 text-sm"></i>
                 </div>
                 
@@ -934,29 +559,29 @@
                   <!-- Dimension 6 -->
                   <div class="bg-white p-3 rounded-md border border-slate-200 shadow-xs">
                     <div class="flex items-center justify-between text-slate-800 font-bold mb-1">
-                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-building-shopping-center text-slate-700"></i>Anchor Retailer Type</span>
-                      <span class="text-[10px] font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">Draw Weight</span>
+                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-building-shopping-center text-slate-700"></i>Nearby Anchor Store</span>
+                      <span class="text-[10px] font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">Traffic Draw</span>
                     </div>
                     <div class="text-[11px] text-slate-600">
-                      <strong>Grocery</strong>, <strong>Mall</strong>, <strong>Target</strong>, <strong>Wal-Mart</strong>, <strong>No Anchor</strong> draw weighting
+                      <strong>Grocery</strong>, <strong>Mall</strong>, <strong>Target</strong>, <strong>Wal-Mart</strong>, <strong>No Anchor</strong>
                     </div>
                   </div>
 
                   <!-- Dimension 7 -->
                   <div class="bg-white p-3 rounded-md border border-slate-200 shadow-xs">
                     <div class="flex items-center justify-between text-slate-800 font-bold mb-1">
-                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-slate-700"></i>Security Risk Class</span>
+                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-slate-700"></i>Security Risk Level</span>
                       <span class="text-[10px] font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">Risk 0 to 3_4</span>
                     </div>
                     <div class="text-[11px] text-slate-600">
-                      <strong class="text-slate-800">Risk 0</strong> (Lowest crime index) to <strong class="text-slate-800">Risk 3_4</strong> (Highest crime risk)
+                      <strong class="text-slate-800">Risk 0</strong> (Lowest crime risk) to <strong class="text-slate-800">Risk 3_4</strong> (Highest crime risk)
                     </div>
                   </div>
 
                   <!-- Dimension 8 -->
                   <div class="bg-white p-3 rounded-md border border-slate-200 shadow-xs">
                     <div class="flex items-center justify-between text-slate-800 font-bold mb-1">
-                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-sack-xmark text-slate-700"></i>Shrink Class</span>
+                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-sack-xmark text-slate-700"></i>Shrink Level</span>
                       <span class="text-[10px] font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">Shrink 0 to 4</span>
                     </div>
                     <div class="text-[11px] text-slate-600">
@@ -966,14 +591,14 @@
                 </div>
 
                 <div class="p-2.5 bg-slate-100 border-t border-slate-200 text-[10px] text-slate-700 font-medium">
-                  Physical format, adjacency, and store protection profile
+                  Store type, nearby retailers, and shrink profile
                 </div>
               </div>
 
-              <!-- Column 3: Economics & Performance -->
+              <!-- Column 3: Sales & Shopper Habits -->
               <div class="rounded-lg border border-emerald-200 bg-emerald-50/40 overflow-hidden flex flex-col justify-between">
                 <div class="bg-emerald-900 text-white px-4 py-2.5 flex items-center justify-between">
-                  <span class="text-xs font-bold uppercase tracking-wider">3. Economics &amp; Performance</span>
+                  <span class="text-xs font-bold uppercase tracking-wider">3. Sales &amp; Shopper Habits</span>
                   <i class="fa-solid fa-chart-line text-emerald-200 text-sm"></i>
                 </div>
                 
@@ -981,7 +606,7 @@
                   <!-- Dimension 9 -->
                   <div class="bg-white p-3 rounded-md border border-emerald-100 shadow-xs">
                     <div class="flex items-center justify-between text-slate-800 font-bold mb-1">
-                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-cart-shopping text-emerald-700"></i>Annual POS Transactions</span>
+                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-cart-shopping text-emerald-700"></i>Annual Customer Visits</span>
                       <span class="text-[10px] font-mono bg-emerald-100 px-1.5 py-0.5 rounded text-emerald-800 font-bold">Tiers T1–T3</span>
                     </div>
                     <div class="text-[11px] text-slate-600 space-y-0.5 font-mono">
@@ -994,8 +619,8 @@
                   <!-- Dimension 10 -->
                   <div class="bg-white p-3 rounded-md border border-emerald-100 shadow-xs">
                     <div class="flex items-center justify-between text-slate-800 font-bold mb-1">
-                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-receipt text-emerald-700"></i>Revenue Per Transaction</span>
-                      <span class="text-[10px] font-mono bg-emerald-100 px-1.5 py-0.5 rounded text-emerald-800 font-bold">Quartiles Q1–Q4</span>
+                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-receipt text-emerald-700"></i>Average Basket Size</span>
+                      <span class="text-[10px] font-mono bg-emerald-100 px-1.5 py-0.5 rounded text-emerald-800 font-bold">Tiers Q1–Q4</span>
                     </div>
                     <div class="text-[11px] text-slate-600 space-y-0.5 font-mono">
                       <div>&bull; <strong class="text-slate-800 font-sans">Q1:</strong> &le; $7.00</div>
@@ -1008,7 +633,7 @@
                   <!-- Dimension 11 -->
                   <div class="bg-white p-3 rounded-md border border-emerald-100 shadow-xs">
                     <div class="flex items-center justify-between text-slate-800 font-bold mb-1">
-                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-credit-card text-emerald-700"></i>Payment Mix / Debit Ratio</span>
+                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-credit-card text-emerald-700"></i>Debit vs. Credit Share</span>
                       <span class="text-[10px] font-mono bg-emerald-100 px-1.5 py-0.5 rounded text-emerald-800 font-bold">Buckets B1–B5</span>
                     </div>
                     <div class="text-[11px] text-slate-600 font-mono">
@@ -1019,8 +644,8 @@
                   <!-- Dimension 12 -->
                   <div class="bg-white p-3 rounded-md border border-emerald-100 shadow-xs">
                     <div class="flex items-center justify-between text-slate-800 font-bold mb-1">
-                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-cloud-sun text-emerald-700"></i>Weather &amp; Climate Profile</span>
-                      <span class="text-[10px] font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">Meteostat</span>
+                      <span class="flex items-center gap-1.5"><i class="fa-solid fa-cloud-sun text-emerald-700"></i>Local Weather &amp; Climate</span>
+                      <span class="text-[10px] font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">Climate</span>
                     </div>
                     <div class="text-[11px] text-slate-600 leading-normal">
                       Hot/Hot, Hot/Warm, Mild/Cold, Mild/Moderate, Moderate/Cold, Moderate/Moderate, Moderate/Warm
@@ -1029,7 +654,7 @@
                 </div>
 
                 <div class="p-2.5 bg-emerald-100/50 border-t border-emerald-200 text-[10px] text-emerald-900 font-medium">
-                  Transaction volume velocity, basket size, and climatic sensitivity
+                  Store traffic, basket size, payment mix, and weather
                 </div>
               </div>
 
@@ -1040,7 +665,7 @@
           <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
             <div class="mb-4">
               <h2 class="text-base font-bold text-slate-900">Why 6 Store Clusters Were Selected</h2>
-              <p class="text-xs text-slate-500">Practical business and statistical reasons for choosing 6 clusters over 10 or more</p>
+              <p class="text-xs text-slate-500">Practical business and data reasons for choosing 6 store groups over 10 or more</p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1050,10 +675,10 @@
                 <div>
                   <div class="flex items-center gap-2 mb-2">
                     <span class="w-6 h-6 rounded bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center">1</span>
-                    <h3 class="text-xs font-bold text-slate-900">Keeps Enough Control Stores</h3>
+                    <h3 class="text-xs font-bold text-slate-900">Keeps Enough Comparison Stores</h3>
                   </div>
                   <p class="text-xs text-slate-600 leading-relaxed">
-                    Using 10 clusters creates groups that are too small, leaving too few untreated stores to build good comparisons. Using 6 clusters provides deep, stable donor pools.
+                    Using 10 clusters makes groups too small, leaving too few untreated stores for reliable comparisons. Using 6 clusters keeps healthy comparison pools.
                   </p>
                 </div>
                 <div class="mt-3 pt-2 border-t border-slate-200 text-[11px] font-medium text-emerald-800">
@@ -1069,7 +694,7 @@
                     <h3 class="text-xs font-bold text-slate-900">Allows Regional Filtering</h3>
                   </div>
                   <p class="text-xs text-slate-600 leading-relaxed">
-                    With 6 broad clusters, we can still filter control stores by geographic Supply Chain Zone to keep comparisons regionally accurate.
+                    With 6 broad clusters, we can still match stores within the same region so local market trends stay aligned.
                   </p>
                 </div>
                 <div class="mt-3 pt-2 border-t border-slate-200 text-[11px] font-medium text-emerald-800">
@@ -1082,14 +707,14 @@
                 <div>
                   <div class="flex items-center gap-2 mb-2">
                     <span class="w-6 h-6 rounded bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center">3</span>
-                    <h3 class="text-xs font-bold text-slate-900">Similar Statistical Fit</h3>
+                    <h3 class="text-xs font-bold text-slate-900">Clean Group Separation</h3>
                   </div>
                   <p class="text-xs text-slate-600 leading-relaxed">
-                    Information criteria (BIC and Entropy) show almost identical separation between 6 and 10 clusters. Choosing 6 avoids unnecessary complexity.
+                    Model fit scores show almost identical separation between 6 and 10 clusters. Choosing 6 keeps groups clear and avoids over-splitting.
                   </p>
                 </div>
                 <div class="mt-3 pt-2 border-t border-slate-200 text-[11px] font-medium text-emerald-800">
-                  <i class="fa-solid fa-check mr-1 text-emerald-600"></i>Clean statistical fit
+                  <i class="fa-solid fa-check mr-1 text-emerald-600"></i>Clear &amp; stable groups
                 </div>
               </div>
 
@@ -1098,75 +723,18 @@
                 <div>
                   <div class="flex items-center gap-2 mb-2">
                     <span class="w-6 h-6 rounded bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center">4</span>
-                    <h3 class="text-xs font-bold text-slate-900">Scales to Future Initiatives</h3>
+                    <h3 class="text-xs font-bold text-slate-900">Works for Future Rollouts</h3>
                   </div>
                   <p class="text-xs text-slate-600 leading-relaxed">
-                    A clean 6-cluster model provides a consistent foundation across the 24+ upcoming initiatives planned for Phase 2.
+                    A steady 6-cluster setup gives us one consistent way to measure all upcoming store programs without rebuilding groups every time.
                   </p>
                 </div>
                 <div class="mt-3 pt-2 border-t border-slate-200 text-[11px] font-medium text-emerald-800">
-                  <i class="fa-solid fa-check mr-1 text-emerald-600"></i>Ready for 24+ initiatives
+                  <i class="fa-solid fa-check mr-1 text-emerald-600"></i>Ready for future initiatives
                 </div>
               </div>
 
             </div>
-          </div>
-
-          <!-- 6 LCA ARCHETYPE PROFILES (MATCHING IMAGE 2 EXACTLY) -->
-          <div class="space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div>
-                <h2 class="text-base font-bold text-slate-900">6 Store Cluster Archetype Profiles</h2>
-                <p class="text-xs text-slate-500">Fleet-wide segmentation across geographic zones, store setting, economic metrics, and shrink/crime tiers (click to inspect)</p>
-              </div>
-              <span class="text-xs font-mono text-emerald-900 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200 font-semibold">
-                7,569 Clustered Stores Classified
-              </span>
-            </div>
-
-            <!-- 6 Compact Interactive Cluster Selector Tiles -->
-            <div id="archetypeGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
-              <!-- Dynamically populated via JS as interactive selector tiles -->
-            </div>
-
-            <!-- Detailed Archetype Inspector & Radar (Full Width) -->
-            <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4" id="archetypeDetailHeader">
-                <!-- Selected Archetype Title and Metrics -->
-              </div>
-
-              <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-5">
-                <!-- Radar Chart (5 cols) -->
-                <div class="lg:col-span-5 flex flex-col justify-between">
-                  <div>
-                    <div class="text-xs font-bold text-slate-800 uppercase tracking-wider">Multi-Dimensional Footprint (0–100 Normalized)</div>
-                    <div class="text-[11px] text-slate-500">6-Axis Weighted Tier Score vs. Fleet Average Baseline (7,569 Stores)</div>
-                  </div>
-                  <div class="h-72 relative flex items-center justify-center my-2">
-                    <canvas id="archetypeRadarChart"></canvas>
-                  </div>
-                  <div class="text-[10px] text-slate-500 text-center font-mono">
-                    Green = Segment &middot; Dashed Slate = Fleet Average Baseline
-                  </div>
-                  <div class="mt-1.5 text-center text-[11px] text-emerald-800 bg-emerald-50/70 border border-emerald-200 rounded py-1 px-2 font-medium">
-                    <i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i>Empirical Weighted Tier Scores mapped linearly from LCA bucket distributions
-                  </div>
-                </div>
-
-                <!-- Attributes & Exact Empirical Details (7 cols) -->
-                <div class="lg:col-span-7 flex flex-col justify-between space-y-4">
-                  <div id="archetypeAttributeList" class="space-y-3 text-xs">
-                    <!-- Populated via JS -->
-                  </div>
-
-                  <div id="archetypeDetailFooter" class="pt-3 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
-                    <!-- Populated via JS -->
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
           </div>
 
         </section>
@@ -1182,90 +750,23 @@
             <div>
               <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-dt-emerald">
                 <i class="fa-solid fa-chart-line"></i>
-                <span>Econometric Forecasting &amp; Attribution</span>
+                <span>Wave &amp; Store Pool Details</span>
               </div>
-              <h1 class="text-2xl font-bold text-slate-900 tracking-tight mt-0.5">BSTS Model &amp; Wave Donor Simulator</h1>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight mt-0.5">Deep Dive into Lift Estimates</h1>
               <p class="text-sm text-slate-600 mt-1 max-w-3xl">
-                Bayesian Structural Time Series (BSTS) modeling counterfactual store sales trajectories. Granularity: <span class="font-mono text-emerald-800 font-semibold">Cluster &times; Month_Year (Wave)</span>. Evaluation timeline: 12 months pre-launch baseline regression, 6 months post-launch causal lift attribution.
+                Rules for choosing comparison stores, qualified test and control store counts, and an interactive wave-level simulator showing actual vs. baseline results across 12 months before and 6 months after launch.
               </p>
             </div>
             <div class="flex flex-wrap items-center gap-2 self-start md:self-auto text-xs">
               <span class="px-2.5 py-1 bg-white rounded border border-slate-200 text-slate-700 font-medium">
-                <span class="text-slate-400 mr-1">Granularity:</span>
-                <strong class="font-mono text-emerald-800">Cluster &times; Wave</strong>
+                <span class="text-slate-400 mr-1">Wave Level:</span>
+                <strong class="font-mono text-emerald-800">Cluster &times; Zone &times; Month</strong>
               </span>
               <span class="px-2.5 py-1 bg-emerald-50 rounded border border-emerald-200 text-emerald-900 font-medium">
                 <span class="text-emerald-600 mr-1">Window:</span>
                 <strong class="font-mono">12M Pre / 6M Post</strong>
               </span>
             </div>
-          </div>
-
-          <!-- 18-MONTH BSTS TRAJECTORY CHART & PERFORMANCE METRICS -->
-          <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm space-y-5">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <div class="flex items-center gap-2">
-                  <h2 class="text-base font-bold text-slate-900">18-Month BSTS Trajectory &amp; Counterfactual Baseline</h2>
-                  <span class="text-[10px] font-mono bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200 font-semibold">52 Wks Pre + 26 Wks Post</span>
-                </div>
-                <p class="text-xs text-slate-500 mt-0.5">Weekly per-store sales ($): Actual treated stores vs. estimated synthetic counterfactual trajectory with 95% posterior credible bounds</p>
-              </div>
-
-              <!-- Legend Chips -->
-              <div class="flex flex-wrap items-center gap-3 text-xs">
-                <span class="flex items-center gap-1.5 font-medium text-slate-800">
-                  <span class="w-3 h-3 rounded-full bg-emerald-700 inline-block"></span>
-                  <span>Actual Treated Sales</span>
-                </span>
-                <span class="flex items-center gap-1.5 font-medium text-slate-600">
-                  <span class="w-3 h-0.5 border-t-2 border-dashed border-slate-500 inline-block"></span>
-                  <span>BSTS Counterfactual Baseline</span>
-                </span>
-                <span class="flex items-center gap-1.5 font-medium text-slate-500">
-                  <span class="w-3 h-3 bg-emerald-100 border border-emerald-300 rounded-xs inline-block"></span>
-                  <span>95% Credible Interval</span>
-                </span>
-              </div>
-            </div>
-
-            <!-- Chart Canvas Container -->
-            <div class="h-72 w-full relative">
-              <canvas id="bstsTrajectoryChart"></canvas>
-            </div>
-
-            <!-- Required Empirical Data Status Note -->
-            <div class="text-center text-xs text-slate-500 italic font-medium -mt-2">
-              <i class="fa-solid fa-circle-info mr-1 text-slate-400"></i>This is an example, Actual data yet to be considered
-            </div>
-
-            <!-- BSTS Evaluation Scorecards (4 Diagnostic Pills) -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-100 text-center">
-              <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                <div class="text-[10px] font-semibold uppercase text-slate-500">Pre-Period Baseline Fit</div>
-                <div class="text-base font-bold text-emerald-800 font-mono mt-0.5">2.14% MAPE</div>
-                <div class="text-[10px] text-slate-500 mt-0.5">Benchmark: &lt; 3.00% (Pass)</div>
-              </div>
-
-              <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                <div class="text-[10px] font-semibold uppercase text-slate-500">Avg Weekly Net Lift</div>
-                <div class="text-base font-bold text-emerald-800 font-mono mt-0.5">+$3,124 / wk</div>
-                <div class="text-[10px] text-emerald-700 font-medium mt-0.5">+8.11% vs Baseline</div>
-              </div>
-
-              <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                <div class="text-[10px] font-semibold uppercase text-slate-500">26-Wk Cumulative Lift</div>
-                <div class="text-base font-bold text-emerald-800 font-mono mt-0.5">+$81,224</div>
-                <div class="text-[10px] text-slate-500 mt-0.5">Per treated store</div>
-              </div>
-
-              <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                <div class="text-[10px] font-semibold uppercase text-slate-500">Statistical Confidence</div>
-                <div class="text-base font-bold text-emerald-800 font-mono mt-0.5">99.4% P(Lift &gt; 0)</div>
-                <div class="text-[10px] text-emerald-700 font-medium mt-0.5">High Causal Power</div>
-              </div>
-            </div>
-
           </div>
 
           <!-- ======================================================== -->
@@ -1277,8 +778,8 @@
             <div>
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                 <div>
-                  <h2 class="text-base font-bold text-slate-900">The 4 Control Qualification Rules</h2>
-                  <p class="text-xs text-slate-500">Every candidate store in the same cluster must pass all 4 rules to enter the control donor pool</p>
+                  <h2 class="text-base font-bold text-slate-900">Rules for Picking Comparison Stores</h2>
+                  <p class="text-xs text-slate-500">Every comparison store in the same cluster must pass all 4 rules below</p>
                 </div>
                 <span class="text-[11px] font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded border border-slate-200">
                   4 of 4 Rules Enforced
@@ -1565,136 +1066,6 @@
             </div>
 
           </div>
-
-          <!-- ======================================================== -->
-          <!-- PRELIMINARY RESULTS FROM BSTS MODEL (MAPE < 5%)          -->
-          <!-- ======================================================== -->
-          <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm space-y-5">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-200 pb-4">
-              <div>
-                <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-dt-emerald">
-                  <i class="fa-solid fa-table-list"></i>
-                  <span>Model Readout</span>
-                </div>
-                <h2 class="text-lg font-bold text-slate-900 mt-0.5">Preliminary Results from BSTS Model</h2>
-                <p class="text-xs text-slate-600 mt-0.5">
-                  Initial wave-level causal lift estimates filtered to waves meeting baseline fit accuracy criteria.
-                </p>
-              </div>
-              <div class="flex flex-wrap items-center gap-2 text-xs">
-                <span class="px-2.5 py-1 rounded bg-slate-100 border border-slate-200 font-mono text-slate-800 font-semibold">
-                  Horizon: Pre-12M / Post-6M
-                </span>
-                <span class="px-2.5 py-1 rounded bg-emerald-50 border border-emerald-200 font-mono text-emerald-900 font-semibold">
-                  Criteria: MAPE &lt; 5%
-                </span>
-                <span class="px-2.5 py-1 rounded bg-slate-100 border border-slate-200 font-mono text-slate-800 font-semibold">
-                  Wave: cluster &times; zone &times; month
-                </span>
-              </div>
-            </div>
-
-            <!-- Preliminary Results Table -->
-            <div class="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-xs">
-              <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs border-collapse">
-                  <thead>
-                    <tr class="bg-slate-100 border-b border-slate-200 text-[11px] font-bold text-slate-700 uppercase tracking-wider">
-                      <th class="py-3 px-4 border-r border-slate-200">Initiative / Model</th>
-                      <th class="py-3 px-4 text-right border-r border-slate-200">Number of Waves</th>
-                      <th class="py-3 px-4 text-right">Revenue Lift %</th>
-                      <th class="py-3 px-4 text-right">Transactions Lift %</th>
-                      <th class="py-3 px-4 text-right">UPT Lift %</th>
-                      <th class="py-3 px-4 text-right">AUR Lift %</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-slate-100 font-mono text-xs">
-                    
-                    <tr class="hover:bg-slate-50/80 transition-colors">
-                      <td class="py-3 px-4 font-sans font-bold text-slate-900 border-r border-slate-200">Legacy_to_MPP_v1</td>
-                      <td class="py-3 px-4 text-right tabular-nums font-semibold text-slate-800 border-r border-slate-200">64</td>
-                      <td class="py-3 px-4 text-right tabular-nums font-bold text-emerald-700">0.46%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-emerald-700">0.21%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-rose-700">-0.35%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-emerald-700">0.60%</td>
-                    </tr>
-
-                    <tr class="hover:bg-slate-50/80 transition-colors bg-emerald-50/20">
-                      <td class="py-3 px-4 font-sans font-bold text-slate-900 border-r border-slate-200">Legacy_to_MPP_Roll_out</td>
-                      <td class="py-3 px-4 text-right tabular-nums font-semibold text-slate-800 border-r border-slate-200">4</td>
-                      <td class="py-3 px-4 text-right tabular-nums font-bold text-emerald-800">3.77%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-emerald-700">0.63%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-rose-700">-3.56%</td>
-                      <td class="py-3 px-4 text-right tabular-nums font-bold text-emerald-800">6.85%</td>
-                    </tr>
-
-                    <tr class="hover:bg-slate-50/80 transition-colors bg-emerald-50/20">
-                      <td class="py-3 px-4 font-sans font-bold text-slate-900 border-r border-slate-200">DTP_to_MPP_v1</td>
-                      <td class="py-3 px-4 text-right tabular-nums font-semibold text-slate-800 border-r border-slate-200">104</td>
-                      <td class="py-3 px-4 text-right tabular-nums font-bold text-emerald-800">2.35%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-rose-700">-0.52%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-rose-700">-2.41%</td>
-                      <td class="py-3 px-4 text-right tabular-nums font-bold text-emerald-800">5.43%</td>
-                    </tr>
-
-                    <tr class="hover:bg-slate-50/80 transition-colors">
-                      <td class="py-3 px-4 font-sans font-bold text-slate-900 border-r border-slate-200">DTP_to_MPP_v2</td>
-                      <td class="py-3 px-4 text-right tabular-nums font-semibold text-slate-800 border-r border-slate-200">57</td>
-                      <td class="py-3 px-4 text-right tabular-nums font-bold text-emerald-700">0.35%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-emerald-700">0.29%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-emerald-700">0.16%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-rose-700">-0.08%</td>
-                    </tr>
-
-                    <tr class="hover:bg-slate-50/80 transition-colors">
-                      <td class="py-3 px-4 font-sans font-bold text-slate-900 border-r border-slate-200">DTP_to_MPP_Roll_out</td>
-                      <td class="py-3 px-4 text-right tabular-nums font-semibold text-slate-800 border-r border-slate-200">15</td>
-                      <td class="py-3 px-4 text-right tabular-nums font-bold text-emerald-700">0.05%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-rose-700">-0.91%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-rose-700">-1.54%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-emerald-700">2.56%</td>
-                    </tr>
-
-                    <tr class="hover:bg-slate-50/80 transition-colors bg-slate-50/60">
-                      <td class="py-3 px-4 font-sans font-bold text-slate-900 border-r border-slate-200">Dedicated Cashier</td>
-                      <td class="py-3 px-4 text-right tabular-nums font-semibold text-slate-800 border-r border-slate-200">16</td>
-                      <td class="py-3 px-4 text-right tabular-nums font-bold text-rose-700">-0.32%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-rose-700">-0.52%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-emerald-700">0.03%</td>
-                      <td class="py-3 px-4 text-right tabular-nums text-emerald-700">0.16%</td>
-                    </tr>
-
-                  </tbody>
-                </table>
-              </div>
-
-              <!-- Key Readout Notes -->
-              <div class="p-3.5 bg-slate-50 border-t border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                <div class="p-2.5 rounded bg-white border border-slate-200">
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800">Price Mix Driving MPP Lift</span>
-                  <p class="text-[11px] text-slate-700 mt-1 leading-relaxed">
-                    Revenue gains in MPP cohorts come mainly from higher unit prices (<strong>AUR +6.85%</strong> in Legacy Rollout, <strong>+5.43%</strong> in DTP v1), while units per trip (UPT) pull back slightly.
-                  </p>
-                </div>
-                <div class="p-2.5 rounded bg-white border border-slate-200">
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-600">Wave Coverage (MAPE &lt; 5%)</span>
-                  <p class="text-[11px] text-slate-700 mt-1 leading-relaxed">
-                    <strong>DTP_to_MPP_v1 (104 waves)</strong>, <strong>Legacy_to_MPP_v1 (64 waves)</strong>, and <strong>DTP_to_MPP_v2 (57 waves)</strong> provide the broadest wave coverage under the 5% MAPE accuracy filter.
-                  </p>
-                </div>
-                <div class="p-2.5 rounded bg-amber-50/70 border border-amber-200">
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800">Dedicated Cashier Preliminary Readout</span>
-                  <p class="text-[11px] text-amber-950 mt-1 leading-relaxed">
-                    Early readout across 16 qualifying waves shows flat-to-slightly negative preliminary lifts (-0.32% revenue); the team is reviewing additional modeling perspectives.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ======================================================== -->
-          <!-- INTERACTIVE WAVE & SHARED CONTROL DONOR POOL SIMULATOR   -->
-          <!-- ======================================================== -->
           <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm space-y-5">
             
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
@@ -1809,6 +1180,73 @@
             <div class="p-2.5 rounded-lg bg-amber-50/80 border border-amber-200 text-xs text-amber-950 text-center font-medium flex items-center justify-center gap-2">
               <i class="fa-solid fa-circle-info text-amber-600"></i>
               <span>This is an example, Actual data yet to be considered (will update accordingly once the model is finalized).</span>
+            </div>
+
+          </div>
+
+          <!-- 18-MONTH SALES TREND CHART (DRIVEN BY SIMULATOR SELECTIONS) -->
+          <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <h2 class="text-base font-bold text-slate-900">18-Month Sales Trend vs. Baseline</h2>
+                  <span id="bstsChartBadge" class="text-[10px] font-mono bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200 font-semibold">DTP_to_MPP_v1 &middot; c01_z05_6 &middot; Revenue</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5" id="bstsChartSubtitle">Monthly per-store Revenue: Actual store performance vs. comparison baseline (12 months before launch + 6 months after launch)</p>
+              </div>
+
+              <!-- Legend Chips -->
+              <div class="flex flex-wrap items-center gap-3 text-xs">
+                <span class="flex items-center gap-1.5 font-medium text-slate-800">
+                  <span class="w-3 h-3 rounded-full bg-emerald-700 inline-block"></span>
+                  <span>Actual Stores</span>
+                </span>
+                <span class="flex items-center gap-1.5 font-medium text-slate-600">
+                  <span class="w-3 h-0.5 border-t-2 border-dashed border-slate-500 inline-block"></span>
+                  <span>Comparison Baseline</span>
+                </span>
+                <span class="flex items-center gap-1.5 font-medium text-slate-500">
+                  <span class="w-3 h-3 bg-emerald-100 border border-emerald-300 rounded-xs inline-block"></span>
+                  <span>Expected Range</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- Chart Canvas Container -->
+            <div class="h-72 w-full relative">
+              <canvas id="bstsTrajectoryChart"></canvas>
+            </div>
+
+            <!-- Required Empirical Data Status Note -->
+            <div class="text-center text-xs text-slate-500 italic font-medium -mt-2">
+              <i class="fa-solid fa-circle-info mr-1 text-slate-400"></i>This is an example, Actual data yet to be considered
+            </div>
+
+            <!-- Chart Evaluation Scorecards (4 Diagnostic Pills driven by Simulator) -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-100 text-center">
+              <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                <div class="text-[10px] font-semibold uppercase text-slate-500">Before-Launch Fit</div>
+                <div class="text-base font-bold text-emerald-800 font-mono mt-0.5" id="bstsCardFit">2.14% MAPE</div>
+                <div class="text-[10px] text-slate-500 mt-0.5">Criteria: &lt; 5.00%</div>
+              </div>
+
+              <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                <div class="text-[10px] font-semibold uppercase text-slate-500">Avg Monthly Lift</div>
+                <div class="text-base font-bold text-emerald-800 font-mono mt-0.5" id="bstsCardAvgLift">+$4,352 / mo</div>
+                <div class="text-[10px] text-emerald-700 font-medium mt-0.5" id="bstsCardAvgPct">+2.35% vs Baseline</div>
+              </div>
+
+              <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                <div class="text-[10px] font-semibold uppercase text-slate-500">6-Month Total Difference</div>
+                <div class="text-base font-bold text-emerald-800 font-mono mt-0.5" id="bstsCardCumLift">+$26,112</div>
+                <div class="text-[10px] text-slate-500 mt-0.5" id="bstsCardCumNote">Per treated store (6M)</div>
+              </div>
+
+              <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                <div class="text-[10px] font-semibold uppercase text-slate-500">Qualifying Waves</div>
+                <div class="text-base font-bold text-emerald-800 font-mono mt-0.5" id="bstsCardWaves">104 Waves</div>
+                <div class="text-[10px] text-emerald-700 font-medium mt-0.5">Selected Model Cohort</div>
+              </div>
             </div>
 
           </div>
@@ -2303,6 +1741,7 @@
 
     // --- INITIALIZATION ---
     document.addEventListener("DOMContentLoaded", () => {
+      initOverviewWaterfall();
       initArchetypeCards();
       renderArchetypeDetail(1);
       initArchetypeRadarChart();
@@ -2598,81 +2037,285 @@
       charts.radar.update();
     }
 
-    // --- VIEW 3: BSTS 18-MONTH TRAJECTORY CHART ---
+    // --- PRELIMINARY BSTS MODEL DATA (HORIZON: PRE-12M / POST-6M, CRITERIA: MAPE < 5%) ---
+    const prelimBstsResults = {
+      'Legacy_to_MPP_v1':      { waves: 64,  Revenue:  0.46, Transactions:  0.21, UPT: -0.35, AUR:  0.60 },
+      'Legacy_to_MPP_Roll_out':{ waves: 4,   Revenue:  3.77, Transactions:  0.63, UPT: -3.56, AUR:  6.85 },
+      'DTP_to_MPP_v1':         { waves: 104, Revenue:  2.35, Transactions: -0.52, UPT: -2.41, AUR:  5.43 },
+      'DTP_to_MPP_v2':         { waves: 57,  Revenue:  0.35, Transactions:  0.29, UPT:  0.16, AUR: -0.08 },
+      'DTP_to_MPP_Roll_out':   { waves: 15,  Revenue:  0.05, Transactions: -0.91, UPT: -1.54, AUR:  2.56 },
+      'Dedicated Cashier':     { waves: 16,  Revenue: -0.32, Transactions: -0.52, UPT:  0.03, AUR:  0.16 }
+    };
+
+    const waterfallModels = Object.keys(prelimBstsResults);
+    const waterfallMetrics = ['Revenue', 'Transactions', 'UPT', 'AUR'];
+    let selectedWfModel = 'DTP_to_MPP_v1';
+    let selectedWfMetric = 'Revenue';
+
+    // Illustrative baseline driver shares (external, store features, unexplained)
+    const illustrativeDriverShares = {
+      Revenue:      { external: 1.00, features: 1.00, unexplained: 1.00 },
+      Transactions: { external: 0.40, features: 0.50, unexplained: 0.30 },
+      UPT:          { external: 0.25, features: 0.35, unexplained: 0.20 },
+      AUR:          { external: 0.60, features: 0.40, unexplained: 0.30 }
+    };
+
+    const waterfallConnectorPlugin = {
+      id: 'waterfallConnector',
+      afterDatasetsDraw(chart) {
+        const meta = chart.getDatasetMeta(0);
+        if (!meta || !meta.data || meta.data.length < 5) return;
+        const { ctx } = chart;
+        const raw = chart.data.datasets[0].data;
+        ctx.save();
+        ctx.strokeStyle = '#94A3B8';
+        ctx.lineWidth = 1.2;
+        ctx.setLineDash([4, 3]);
+        for (let i = 0; i < meta.data.length - 1; i++) {
+          const currBar = meta.data[i];
+          const nextBar = meta.data[i + 1];
+          const currVal = raw[i];
+          if (!currBar || !nextBar || !Array.isArray(currVal)) continue;
+          const endY = chart.scales.y.getPixelForValue(currVal[1]);
+          ctx.beginPath();
+          ctx.moveTo(currBar.x + currBar.width / 2, endY);
+          ctx.lineTo(nextBar.x - nextBar.width / 2, endY);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+    };
+
+    function renderOverviewWaterfallFilters() {
+      const modelWrap = document.getElementById('wfModelFilters');
+      const metricWrap = document.getElementById('wfMetricFilters');
+
+      if (modelWrap) {
+        modelWrap.innerHTML = waterfallModels.map(m => {
+          const active = m === selectedWfModel;
+          const waves = prelimBstsResults[m].waves;
+          return `
+            <button type="button" onclick="selectWfModel('${m}')" class="px-3 py-1.5 rounded text-xs font-semibold transition-all border flex items-center gap-1.5 ${
+              active
+                ? 'bg-dt-emerald text-white border-emerald-800 shadow-xs'
+                : 'bg-white text-slate-700 border-slate-300 hover:border-emerald-400 hover:text-emerald-900'
+            }">
+              <span>${m}</span>
+              <span class="text-[10px] font-mono px-1.5 py-0.2 rounded ${active ? 'bg-emerald-800 text-emerald-100' : 'bg-slate-100 text-slate-500'}">${waves}w</span>
+            </button>
+          `;
+        }).join('');
+      }
+
+      if (metricWrap) {
+        metricWrap.innerHTML = waterfallMetrics.map(met => {
+          const active = met === selectedWfMetric;
+          return `
+            <button type="button" onclick="selectWfMetric('${met}')" class="px-3 py-1.5 rounded text-xs font-semibold transition-all border ${
+              active
+                ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                : 'bg-white text-slate-700 border-slate-300 hover:border-slate-500'
+            }">
+              ${met}
+            </button>
+          `;
+        }).join('');
+      }
+    }
+
+    function selectWfModel(model) {
+      selectedWfModel = model;
+      renderOverviewWaterfallFilters();
+      updateOverviewWaterfall();
+    }
+
+    function selectWfMetric(metric) {
+      selectedWfMetric = metric;
+      renderOverviewWaterfallFilters();
+      updateOverviewWaterfall();
+    }
+
+    function initOverviewWaterfall() {
+      renderOverviewWaterfallFilters();
+      const el = document.getElementById('liftWaterfallChart');
+      if (!el) return;
+      const ctx = el.getContext('2d');
+
+      charts.liftWaterfall = new Chart(ctx, {
+        type: 'bar',
+        plugins: [waterfallConnectorPlugin],
+        data: {
+          labels: [
+            'External Factors',
+            'Store Features (Pop/Inc/Loc)',
+            'Initiative Impact (BSTS)',
+            'Unexplained',
+            'Total Lift (Est.)'
+          ],
+          datasets: [{
+            label: 'Lift Contribution (%)',
+            data: [[0, 1], [1, 2], [2, 4.35], [4.35, 5.35], [0, 5.35]],
+            backgroundColor: ['#0284C7', '#4F46E5', '#00733B', '#94A3B8', '#0F172A'],
+            borderColor: ['#0369A1', '#4338CA', '#004d27', '#64748B', '#0F172A'],
+            borderWidth: 1,
+            borderRadius: 4,
+            barPercentage: 0.56
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const val = context.raw;
+                  const diff = Number((val[1] - val[0]).toFixed(2));
+                  const sign = diff >= 0 ? '+' : '';
+                  if (context.dataIndex === 4) {
+                    return `Total Combined Lift: ${sign}${val[1].toFixed(2)}%`;
+                  }
+                  return `Step Contribution: ${sign}${diff.toFixed(2)}% (Cumulative: ${val[1].toFixed(2)}%)`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: {
+                font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' },
+                color: '#334155'
+              }
+            },
+            y: {
+              grid: { color: '#F1F5F9' },
+              ticks: {
+                callback: function(v) { return (v > 0 ? '+' : '') + Number(v).toFixed(1) + '%'; },
+                font: { family: 'JetBrains Mono', size: 10 },
+                color: '#64748B'
+              },
+              title: {
+                display: true,
+                text: 'Lift Percentage Points (%)',
+                font: { size: 10, weight: 'bold' },
+                color: '#64748B'
+              }
+            }
+          }
+        }
+      });
+
+      updateOverviewWaterfall();
+    }
+
+    function updateOverviewWaterfall() {
+      const row = prelimBstsResults[selectedWfModel];
+      const drivers = illustrativeDriverShares[selectedWfMetric] || illustrativeDriverShares.Revenue;
+      if (!row) return;
+
+      const ext = drivers.external;
+      const feat = drivers.features;
+      const initLift = row[selectedWfMetric];
+      const unexp = drivers.unexplained;
+
+      const s1Start = 0;
+      const s1End = Number(ext.toFixed(2));
+      const s2Start = s1End;
+      const s2End = Number((s2Start + feat).toFixed(2));
+      const s3Start = s2End;
+      const s3End = Number((s3Start + initLift).toFixed(2));
+      const s4Start = s3End;
+      const s4End = Number((s4Start + unexp).toFixed(2));
+      const totalLift = s4End;
+
+      const totalEl = document.getElementById('wfTotalLiftValue');
+      const initEl = document.getElementById('wfInitiativeLiftValue');
+      const summaryLabel = document.getElementById('wfSummaryLabel');
+      const waveCountEl = document.getElementById('wfWaveCount');
+      const stripEl = document.getElementById('wfPrelimMetricsStrip');
+
+      if (summaryLabel) summaryLabel.innerText = `${selectedWfMetric} Total Lift (Est.)`;
+      if (totalEl) totalEl.innerText = `${totalLift >= 0 ? '+' : ''}${totalLift.toFixed(2)}%`;
+      if (initEl) initEl.innerText = `${initLift >= 0 ? '+' : ''}${initLift.toFixed(2)}%`;
+      if (waveCountEl) waveCountEl.innerText = row.waves;
+
+      if (charts.liftWaterfall) {
+        charts.liftWaterfall.data.datasets[0].data = [
+          [s1Start, s1End],
+          [s2Start, s2End],
+          [s3Start, s3End],
+          [s4Start, s4End],
+          [0, totalLift]
+        ];
+        const initColor = initLift >= 0 ? '#00733B' : '#E11D48';
+        const initBorder = initLift >= 0 ? '#004d27' : '#BE123C';
+        const totalColor = totalLift >= 0 ? '#0F172A' : '#9F1239';
+        charts.liftWaterfall.data.datasets[0].backgroundColor = ['#0284C7', '#4F46E5', initColor, '#94A3B8', totalColor];
+        charts.liftWaterfall.data.datasets[0].borderColor = ['#0369A1', '#4338CA', initBorder, '#64748B', totalColor];
+        charts.liftWaterfall.update();
+      }
+
+      if (stripEl) {
+        stripEl.innerHTML = waterfallMetrics.map(m => {
+          const val = row[m];
+          const isSelected = m === selectedWfMetric;
+          const pos = val >= 0;
+          return `
+            <button type="button" onclick="selectWfMetric('${m}')" class="text-left p-3 rounded-lg border transition-all ${
+              isSelected
+                ? 'bg-emerald-50 border-emerald-500 ring-1 ring-emerald-500/30'
+                : 'bg-slate-50 border-slate-200 hover:border-emerald-300'
+            }">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">${m} Lift (Model)</span>
+                ${isSelected ? '<span class="text-[9px] font-mono font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded">Active</span>' : ''}
+              </div>
+              <div class="text-base font-extrabold font-mono tabular-nums mt-0.5 ${pos ? 'text-emerald-800' : 'text-rose-700'}">
+                ${pos ? '+' : ''}${val.toFixed(2)}%
+              </div>
+            </button>
+          `;
+        }).join('');
+      }
+    }
+
+    // --- VIEW 3: 18-MONTH SALES TREND CHART (DRIVEN BY SIMULATOR) ---
     function initBSTSTrajectoryChart() {
       const el = document.getElementById('bstsTrajectoryChart');
       if (!el) return;
       const ctx = el.getContext('2d');
 
-      // Generate 78 weekly points: 52 Pre-intervention weeks (-52 to -1) and 26 Post-intervention weeks (+1 to +26)
-      const labels = [];
-      const actualSales = [];
-      const bstsCounterfactual = [];
-      const ciUpper = [];
-      const ciLower = [];
-
-      const baselineWeekly = 38500;
-
-      for (let i = -52; i <= 26; i++) {
-        if (i === 0) continue; // Week 0 is launch marker
-
-        const label = i < 0 ? `Wk ${i}` : `+Wk ${i}`;
-        labels.push(label);
-
-        // Seasonal wave simulation (Q4 surge around Wk -4 to -1 and Wk 22 to 26)
-        const seasonal = Math.sin((i / 52) * 2 * Math.PI) * 2200 + ((i >= -6 && i <= -1) ? 3400 : 0);
-        const noise = (Math.sin(i * 1.7) * 450);
-        const baseVal = Math.round(baselineWeekly + seasonal + noise);
-
-        bstsCounterfactual.push(baseVal);
-
-        if (i < 0) {
-          // Pre-period: Actual matches baseline regression fit closely (MAPE ~2.14%)
-          const fitResidual = (Math.cos(i * 2.3) * 380);
-          actualSales.push(Math.round(baseVal + fitResidual));
-          ciUpper.push(Math.round(baseVal + 600));
-          ciLower.push(Math.round(baseVal - 600));
-        } else {
-          // Post-period: Initiative launched!
-          // Observed lift ramps up to +$3,124/wk (+8.11%)
-          const lift = Math.round(1800 + Math.min(i * 65, 1324) + (Math.sin(i * 0.9) * 300));
-          actualSales.push(baseVal + lift);
-          // Credible bounds widen over post-period forecast horizon
-          const spread = Math.round(800 + (i * 35));
-          ciUpper.push(baseVal + spread);
-          ciLower.push(baseVal - spread);
-        }
-      }
-
       charts.bstsTrajectory = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: labels,
+          labels: [],
           datasets: [
             {
-              label: 'Actual Treated Sales ($)',
-              data: actualSales,
+              label: 'Actual Stores',
+              data: [],
               borderColor: '#00733B',
               backgroundColor: '#00733B',
-              borderWidth: 2.2,
-              pointRadius: 0,
-              pointHoverRadius: 4,
+              borderWidth: 2.4,
+              pointRadius: 3,
+              pointHoverRadius: 5,
               tension: 0.2,
               order: 1
             },
             {
-              label: 'BSTS Counterfactual Baseline',
-              data: bstsCounterfactual,
+              label: 'Comparison Baseline',
+              data: [],
               borderColor: '#64748B',
               borderDash: [5, 4],
-              borderWidth: 1.8,
+              borderWidth: 2,
               pointRadius: 0,
               tension: 0.2,
               order: 2
             },
             {
-              label: '95% Credible Upper Bound',
-              data: ciUpper,
+              label: 'Expected Range Upper',
+              data: [],
               borderColor: 'transparent',
               backgroundColor: 'rgba(0, 115, 59, 0.08)',
               pointRadius: 0,
@@ -2681,8 +2324,8 @@
               order: 3
             },
             {
-              label: '95% Credible Lower Bound',
-              data: ciLower,
+              label: 'Expected Range Lower',
+              data: [],
               borderColor: 'transparent',
               backgroundColor: 'transparent',
               pointRadius: 0,
@@ -2704,8 +2347,10 @@
             tooltip: {
               callbacks: {
                 label: function(context) {
-                  if (context.dataset.label.includes('Bound')) return null;
-                  return `${context.dataset.label}: $${Math.round(context.raw).toLocaleString()}`;
+                  if (context.dataset.label.includes('Range')) return null;
+                  const metricSelect = document.getElementById('simMetricSelect');
+                  const metric = metricSelect ? metricSelect.value : 'Revenue';
+                  return `${context.dataset.label}: ${formatMetricVal(metric, context.raw)}`;
                 }
               }
             }
@@ -2714,21 +2359,27 @@
             x: {
               grid: { display: false },
               ticks: {
-                maxTicksLimit: 16,
-                font: { family: 'JetBrains Mono', size: 9 },
+                font: { family: 'JetBrains Mono', size: 10 },
                 color: '#64748B'
               }
             },
             y: {
               grid: { color: '#F1F5F9' },
               ticks: {
-                callback: function(v) { return '$' + (v / 1000).toFixed(0) + 'k'; },
+                callback: function(v) {
+                  const metricSelect = document.getElementById('simMetricSelect');
+                  const metric = metricSelect ? metricSelect.value : 'Revenue';
+                  if (metric === 'Revenue') return '$' + Math.round(v / 1000) + 'k';
+                  if (metric === 'Transactions') return (v / 1000).toFixed(1) + 'k';
+                  if (metric === 'AUR') return '$' + Number(v).toFixed(2);
+                  return Number(v).toFixed(2);
+                },
                 font: { family: 'JetBrains Mono', size: 10 },
                 color: '#64748B'
               },
               title: {
                 display: true,
-                text: 'Weekly Sales ($/Store)',
+                text: 'Monthly Per-Store Value',
                 font: { size: 10, weight: 'bold' },
                 color: '#94A3B8'
               }
@@ -2738,7 +2389,86 @@
       });
     }
 
-    // --- VIEW 3: SIMPLE WAVE ACTUAL / BASELINE / LIFT SIMULATOR (ZERO RANDOM VALUES) ---
+    function updateBSTSTrajectoryChart(model, wave, metric, targetLiftRate, zoneFactor, waveShift, startMonth, avgLiftAbs, avgLiftPct) {
+      if (!charts.bstsTrajectory) return;
+
+      const baseLevel = metricBaselines[metric] || 185200;
+      const labels = [];
+      const actualSeries = [];
+      const baselineSeries = [];
+      const upperSeries = [];
+      const lowerSeries = [];
+
+      // 12 pre-launch months (-12 to -1)
+      for (let m = -12; m <= -1; m++) {
+        labels.push(`M ${m}`);
+        const seasonFactor = 1 + Math.sin(((startMonth + m) / 12) * 2 * Math.PI) * 0.035;
+        const baseline = baseLevel * zoneFactor * seasonFactor;
+        const preFitOffset = Math.sin(m * 1.4 + startMonth) * 0.006;
+        const actual = baseline * (1 + preFitOffset);
+        const band = baseline * 0.012;
+
+        baselineSeries.push(baseline);
+        actualSeries.push(actual);
+        upperSeries.push(baseline + band);
+        lowerSeries.push(baseline - band);
+      }
+
+      // 6 post-launch months (+1 to +6 matching simulator table exactly)
+      for (let m = 1; m <= 6; m++) {
+        labels.push(`M +${m}`);
+        const seasonFactor = 1 + Math.sin(((startMonth + m) / 12) * 2 * Math.PI) * 0.035;
+        const baseline = baseLevel * zoneFactor * seasonFactor;
+        const rampWeight = 0.85 + (m - 1) * 0.06;
+        const liftPct = (targetLiftRate * rampWeight) + waveShift;
+        const actual = baseline * (1 + liftPct);
+        const band = baseline * (0.015 + m * 0.003);
+
+        baselineSeries.push(baseline);
+        actualSeries.push(actual);
+        upperSeries.push(baseline + band);
+        lowerSeries.push(baseline - band);
+      }
+
+      charts.bstsTrajectory.data.labels = labels;
+      charts.bstsTrajectory.data.datasets[0].data = actualSeries;
+      charts.bstsTrajectory.data.datasets[1].data = baselineSeries;
+      charts.bstsTrajectory.data.datasets[2].data = upperSeries;
+      charts.bstsTrajectory.data.datasets[3].data = lowerSeries;
+      charts.bstsTrajectory.options.scales.y.title.text = `Monthly ${metric} (Per Store)`;
+      charts.bstsTrajectory.update();
+
+      const badgeEl = document.getElementById('bstsChartBadge');
+      const subtitleEl = document.getElementById('bstsChartSubtitle');
+      const avgLiftEl = document.getElementById('bstsCardAvgLift');
+      const avgPctEl = document.getElementById('bstsCardAvgPct');
+      const cumLiftEl = document.getElementById('bstsCardCumLift');
+      const cumNoteEl = document.getElementById('bstsCardCumNote');
+      const wavesEl = document.getElementById('bstsCardWaves');
+
+      if (badgeEl) badgeEl.innerText = `${model} \u00B7 ${wave} \u00B7 ${metric}`;
+      if (subtitleEl) subtitleEl.innerText = `Monthly per-store ${metric}: Actual stores vs. comparison baseline (12 months before launch + 6 months after launch)`;
+      if (avgLiftEl) {
+        avgLiftEl.innerText = `${formatMetricVal(metric, avgLiftAbs, true)} / mo`;
+        avgLiftEl.className = `text-base font-bold font-mono mt-0.5 ${avgLiftAbs >= 0 ? 'text-emerald-800' : 'text-rose-700'}`;
+      }
+      if (avgPctEl) {
+        avgPctEl.innerText = `${avgLiftPct >= 0 ? '+' : ''}${avgLiftPct.toFixed(2)}% vs Baseline`;
+        avgPctEl.className = `text-[10px] font-medium mt-0.5 ${avgLiftPct >= 0 ? 'text-emerald-700' : 'text-rose-700'}`;
+      }
+      if (cumLiftEl) {
+        const isCumulative = metric === 'Revenue' || metric === 'Transactions';
+        cumLiftEl.innerText = isCumulative ? formatMetricVal(metric, avgLiftAbs * 6, true) : formatMetricVal(metric, avgLiftAbs, true);
+        cumLiftEl.className = `text-base font-bold font-mono mt-0.5 ${avgLiftAbs >= 0 ? 'text-emerald-800' : 'text-rose-700'}`;
+        if (cumNoteEl) cumNoteEl.innerText = isCumulative ? '6-month cumulative per store' : '6-month average change';
+      }
+      if (wavesEl) {
+        const modelRow = prelimBstsResults[model];
+        wavesEl.innerText = modelRow ? `${modelRow.waves} Waves` : '--';
+      }
+    }
+
+    // --- VIEW 3: SIMPLE WAVE ACTUAL / BASELINE / LIFT SIMULATOR (DETERMINISTIC) ---
     const modelLiftProfiles = {
       'Legacy_to_MPP_v1': { Revenue: 0.0046, Transactions: 0.0021, UPT: -0.0035, AUR: 0.0060 },
       'Legacy_to_MPP_Roll_out': { Revenue: 0.0377, Transactions: 0.0063, UPT: -0.0356, AUR: 0.0685 },
@@ -2800,7 +2530,6 @@
         ? modelLiftProfiles[model][metric]
         : 0.01;
 
-      // Deterministic zone & wave scaling (no Math.random())
       const zoneFactor = 1 + (zoneNum - 6) * 0.025;
       const waveShift = ((startMonth % 5) - 2) * 0.0008;
 
@@ -2857,6 +2586,8 @@
           </td>
         </tr>
       `;
+
+      updateBSTSTrajectoryChart(model, wave, metric, targetLiftRate, zoneFactor, waveShift, startMonth, avgLiftAbs, avgLiftPct);
     }
   </script>
 </body>

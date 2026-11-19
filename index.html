@@ -96,8 +96,6 @@
         <span class="text-slate-900 font-semibold">Store Sales Lift &amp; Attribution</span>
         <span class="text-slate-300">·</span>
         <span class="text-slate-700 font-medium">Scope: <strong class="text-slate-900 font-mono">US Comparable Stores</strong> (8,994)</span>
-        <span class="text-slate-300">·</span>
-        <span class="text-slate-500 font-mono">Window: 12M Before / 6M After Launch</span>
       </div>
 
       <!-- Zone 3: Primary Action / Quick Controls -->
@@ -209,14 +207,14 @@
             </div>
 
             <!-- 6 Initiative/Model Filters & 4 Metric Filters -->
-            <div class="bg-slate-50 rounded-lg border border-slate-200 p-4 space-y-3">
+            <div class="bg-slate-50 rounded-lg border border-slate-200 p-4 space-y-3.5">
               <div>
                 <div class="text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-2">1. Select Initiative / Model (6 Models)</div>
                 <div id="wfModelFilters" class="flex flex-wrap gap-2">
                   <!-- Populated via JS -->
                 </div>
               </div>
-              <div class="pt-2 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="pt-3 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <div class="text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5">2. Select Performance Metric</div>
                   <div id="wfMetricFilters" class="flex flex-wrap gap-2">
@@ -229,14 +227,9 @@
               </div>
             </div>
 
-            <!-- Waterfall Chart Canvas -->
-            <div class="h-72 w-full relative">
+            <!-- Waterfall Chart Canvas (Includes Direct Value + % Contribution Labels) -->
+            <div class="h-80 w-full relative">
               <canvas id="liftWaterfallChart"></canvas>
-            </div>
-
-            <!-- Selected Model Preliminary Metrics Strip -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 border-t border-slate-100" id="wfPrelimMetricsStrip">
-              <!-- Populated via JS -->
             </div>
 
             <!-- Required Example Disclaimer Note -->
@@ -821,15 +814,15 @@
                 <!-- Rule 3 -->
                 <div class="p-3.5 rounded-lg border border-slate-200 bg-slate-50 hover:border-emerald-300 transition-colors">
                   <div class="flex items-center justify-between mb-1.5">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-1.5 py-0.5 rounded">Rule 3 (Neighbor Match)</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-1.5 py-0.5 rounded">Rule 3</span>
                     <i class="fa-solid fa-shield-halved text-slate-400 text-xs"></i>
                   </div>
-                  <div class="text-xs font-bold text-slate-900 mb-1">Max 2–3 in 3 Miles</div>
+                  <div class="text-xs font-bold text-slate-900 mb-1">No Initiative in 3 Miles</div>
                   <p class="text-[11px] text-slate-600 leading-relaxed mb-2">
-                    Limiting neighboring store activity to a maximum of 2 or 3 similar initiatives within 3 miles of the candidate store.
+                    Comparison stores must have zero neighboring store initiatives active within a 3-mile radius during the evaluation period.
                   </p>
                   <div class="text-[10px] text-slate-500 font-mono pt-2 border-t border-slate-200">
-                    Control requirement: Neighbor activity cap
+                    Control requirement: Zero initiatives within 3 miles
                   </div>
                 </div>
 
@@ -1794,8 +1787,6 @@
         }`;
         tile.onclick = () => selectArchetype(arch.id);
 
-        const revMillions = (arch.avgRev / 1000000).toFixed(2);
-
         tile.innerHTML = `
           <div>
             <div class="flex items-center justify-between gap-1 mb-1.5">
@@ -1814,14 +1805,10 @@
             </h3>
           </div>
 
-          <div class="mt-3 pt-2.5 border-t ${isSelected ? 'border-emerald-700/80' : 'border-slate-100'} space-y-1">
+          <div class="mt-3 pt-2.5 border-t ${isSelected ? 'border-emerald-700/80' : 'border-slate-100'}">
             <div class="flex items-baseline justify-between">
               <span class="text-[10px] ${isSelected ? 'text-emerald-200/90' : 'text-slate-500'}">Stores</span>
               <span class="text-sm font-extrabold font-mono tabular-nums ${isSelected ? 'text-white' : 'text-slate-900'}">${arch.stores.toLocaleString()}</span>
-            </div>
-            <div class="flex items-baseline justify-between">
-              <span class="text-[10px] ${isSelected ? 'text-emerald-200/90' : 'text-slate-500'}">Avg Rev</span>
-              <span class="text-[11px] font-bold font-mono tabular-nums ${isSelected ? 'text-emerald-300' : 'text-emerald-800'}">$${revMillions}M</span>
             </div>
           </div>
         `;
@@ -2068,6 +2055,8 @@
         const { ctx } = chart;
         const raw = chart.data.datasets[0].data;
         ctx.save();
+
+        // 1. Dashed connector lines between waterfall steps
         ctx.strokeStyle = '#94A3B8';
         ctx.lineWidth = 1.2;
         ctx.setLineDash([4, 3]);
@@ -2082,6 +2071,62 @@
           ctx.lineTo(nextBar.x - nextBar.width / 2, endY);
           ctx.stroke();
         }
+
+        // 2. Direct bar labels with both percentage-point lift and % contribution share
+        ctx.setLineDash([]);
+        ctx.textAlign = 'center';
+        const stepDiffs = [0, 1, 2, 3].map(idx => {
+          const v = raw[idx];
+          return Array.isArray(v) ? (v[1] - v[0]) : 0;
+        });
+        const totalVal = Array.isArray(raw[4]) ? raw[4][1] : 0;
+        const allPositive = totalVal > 0 && stepDiffs.every(d => d >= 0);
+        const denom = allPositive
+          ? totalVal
+          : stepDiffs.reduce((acc, d) => acc + Math.abs(d), 0);
+
+        for (let i = 0; i < meta.data.length; i++) {
+          const bar = meta.data[i];
+          const val = raw[i];
+          if (!bar || !Array.isArray(val)) continue;
+
+          const diff = i === 4 ? val[1] : (val[1] - val[0]);
+          const sign = diff >= 0 ? '+' : '';
+          const mainLabel = `${sign}${diff.toFixed(2)}%`;
+
+          let shareLabel = '';
+          if (i === 4) {
+            shareLabel = '(100% total)';
+          } else {
+            const sharePct = denom > 0 ? ((Math.abs(diff) / denom) * 100) : 0;
+            const role = diff < 0 ? 'drag' : 'share';
+            shareLabel = `(${sharePct.toFixed(1)}% ${role})`;
+          }
+
+          const p0 = chart.scales.y.getPixelForValue(val[0]);
+          const p1 = chart.scales.y.getPixelForValue(val[1]);
+          const yTop = Math.min(p0, p1);
+          const yBottom = Math.max(p0, p1);
+          const isNeg = diff < 0;
+
+          ctx.font = '700 11.5px "JetBrains Mono", monospace';
+          ctx.fillStyle = isNeg ? '#BE123C' : (i === 2 ? '#004d27' : '#0F172A');
+
+          if (isNeg) {
+            ctx.textBaseline = 'top';
+            ctx.fillText(mainLabel, bar.x, yBottom + 5);
+            ctx.font = '600 10px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#E11D48';
+            ctx.fillText(shareLabel, bar.x, yBottom + 19);
+          } else {
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(mainLabel, bar.x, yTop - 16);
+            ctx.font = '600 10px "JetBrains Mono", monospace';
+            ctx.fillStyle = i === 2 ? '#047857' : '#475569';
+            ctx.fillText(shareLabel, bar.x, yTop - 4);
+          }
+        }
+
         ctx.restore();
       }
     };
@@ -2108,15 +2153,20 @@
       }
 
       if (metricWrap) {
+        const row = prelimBstsResults[selectedWfModel];
         metricWrap.innerHTML = waterfallMetrics.map(met => {
           const active = met === selectedWfMetric;
+          const drivers = illustrativeDriverShares[met] || illustrativeDriverShares.Revenue;
+          const metTotal = drivers.external + drivers.features + (row ? row[met] : 0) + drivers.unexplained;
+          const totalStr = `${metTotal >= 0 ? '+' : ''}${metTotal.toFixed(2)}%`;
           return `
-            <button type="button" onclick="selectWfMetric('${met}')" class="px-3 py-1.5 rounded text-xs font-semibold transition-all border ${
+            <button type="button" onclick="selectWfMetric('${met}')" class="px-3 py-1.5 rounded text-xs font-semibold transition-all border flex items-center gap-1.5 ${
               active
                 ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
                 : 'bg-white text-slate-700 border-slate-300 hover:border-slate-500'
             }">
-              ${met}
+              <span>${met}</span>
+              <span class="text-[10px] font-mono px-1.5 py-0.2 rounded ${active ? 'bg-slate-700 text-emerald-300' : 'bg-slate-100 text-slate-600'}">${totalStr}</span>
             </button>
           `;
         }).join('');
@@ -2165,18 +2215,33 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          layout: {
+            padding: { top: 36, bottom: 26, left: 4, right: 8 }
+          },
           plugins: {
             legend: { display: false },
             tooltip: {
               callbacks: {
                 label: function(context) {
                   const val = context.raw;
-                  const diff = Number((val[1] - val[0]).toFixed(2));
+                  const diff = context.dataIndex === 4
+                    ? Number(val[1].toFixed(2))
+                    : Number((val[1] - val[0]).toFixed(2));
                   const sign = diff >= 0 ? '+' : '';
+                  const row = prelimBstsResults[selectedWfModel];
+                  const drivers = illustrativeDriverShares[selectedWfMetric] || illustrativeDriverShares.Revenue;
+                  const initVal = row[selectedWfMetric];
+                  const totalSum = drivers.external + drivers.features + initVal + drivers.unexplained;
+                  const allPositive = totalSum > 0 && drivers.external >= 0 && drivers.features >= 0 && initVal >= 0 && drivers.unexplained >= 0;
+                  const denom = allPositive
+                    ? totalSum
+                    : (Math.abs(drivers.external) + Math.abs(drivers.features) + Math.abs(initVal) + Math.abs(drivers.unexplained));
                   if (context.dataIndex === 4) {
-                    return `Total Combined Lift: ${sign}${val[1].toFixed(2)}%`;
+                    return `Total Combined Lift: ${sign}${val[1].toFixed(2)}% (100% of total)`;
                   }
-                  return `Step Contribution: ${sign}${diff.toFixed(2)}% (Cumulative: ${val[1].toFixed(2)}%)`;
+                  const sharePct = denom > 0 ? ((Math.abs(diff) / denom) * 100).toFixed(1) : '0.0';
+                  const role = diff < 0 ? 'drag' : 'share';
+                  return `Contribution: ${sign}${diff.toFixed(2)}% (${sharePct}% ${role})`;
                 }
               }
             }
@@ -2190,6 +2255,7 @@
               }
             },
             y: {
+              grace: '14%',
               grid: { color: '#F1F5F9' },
               ticks: {
                 callback: function(v) { return (v > 0 ? '+' : '') + Number(v).toFixed(1) + '%'; },
@@ -2234,7 +2300,6 @@
       const initEl = document.getElementById('wfInitiativeLiftValue');
       const summaryLabel = document.getElementById('wfSummaryLabel');
       const waveCountEl = document.getElementById('wfWaveCount');
-      const stripEl = document.getElementById('wfPrelimMetricsStrip');
 
       if (summaryLabel) summaryLabel.innerText = `${selectedWfMetric} Total Lift (Est.)`;
       if (totalEl) totalEl.innerText = `${totalLift >= 0 ? '+' : ''}${totalLift.toFixed(2)}%`;
@@ -2255,29 +2320,6 @@
         charts.liftWaterfall.data.datasets[0].backgroundColor = ['#0284C7', '#4F46E5', initColor, '#94A3B8', totalColor];
         charts.liftWaterfall.data.datasets[0].borderColor = ['#0369A1', '#4338CA', initBorder, '#64748B', totalColor];
         charts.liftWaterfall.update();
-      }
-
-      if (stripEl) {
-        stripEl.innerHTML = waterfallMetrics.map(m => {
-          const val = row[m];
-          const isSelected = m === selectedWfMetric;
-          const pos = val >= 0;
-          return `
-            <button type="button" onclick="selectWfMetric('${m}')" class="text-left p-3 rounded-lg border transition-all ${
-              isSelected
-                ? 'bg-emerald-50 border-emerald-500 ring-1 ring-emerald-500/30'
-                : 'bg-slate-50 border-slate-200 hover:border-emerald-300'
-            }">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">${m} Lift (Model)</span>
-                ${isSelected ? '<span class="text-[9px] font-mono font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded">Active</span>' : ''}
-              </div>
-              <div class="text-base font-extrabold font-mono tabular-nums mt-0.5 ${pos ? 'text-emerald-800' : 'text-rose-700'}">
-                ${pos ? '+' : ''}${val.toFixed(2)}%
-              </div>
-            </button>
-          `;
-        }).join('');
       }
     }
 
